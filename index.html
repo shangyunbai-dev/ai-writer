@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-4 Level AI Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0b10 0%, #12151f 100%);
+            color: #fff;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+        .nav-links a {
+            color: #b0b3b8;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        .nav-links a:hover {
+            color: #66fcf1;
+        }
+        /* 语言切换（极简可靠版） */
+        .lang-wrap {
+            position: relative;
+        }
+        .lang-btn {
+            background: rgba(102,252,241,0.1);
+            border: 1px solid rgba(102,252,241,0.2);
+            color: #66fcf1;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .lang-menu {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: #1f2833;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 999;
+        }
+        .lang-menu.show {
+            display: block;
+        }
+        .lang-menu div {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        .lang-menu div:hover {
+            background: rgba(102,252,241,0.1);
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .price-card {
+            background: rgba(31,40,51,0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+        .buy-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .code-box {
+            background: rgba(31,40,51,0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+        .code-input {
+            width: 70%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(102,252,241,0.2);
+            background: rgba(47,57,65,0.8);
+            color: white;
+        }
+        .code-btn {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg,#aaff80,#66fcf1);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .enter-chat {
+            background: #22c55e;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            display: none;
+            margin-top: 1rem;
+        }
+        .faq {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        .faq-item {
+            background: rgba(31,40,51,0.8);
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        .faq-q {
+            padding: 1rem;
+            color: #66fcf1;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 1rem;
+            color: #ccc;
+        }
+        .faq-a.show {
+            max-height: 500px;
+            padding-bottom: 1rem;
+        }
+        footer {
+            border-top: 1px solid rgba(102,252,241,0.15);
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        footer a {
+            color: #888;
+            margin: 0 0.5rem;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #66fcf1;
+        }
+        /* 新增：底部双列政策样式（完全匹配原有风格） */
+        .footer-policies {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        .policy-section h3 {
+            color: #66fcf1;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+        .policy-section p {
+            color: #c5c6c7;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        @media (max-width: 900px) {
+            .footer-policies {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .code-input {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            .code-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="nav-links">
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="#pricing" data-i18n="nav_price">Pricing</a>
+                <a href="#faq" data-i18n="nav_faq">FAQ</a>
+            </div>
+            <div class="lang-wrap">
+                <button class="lang-btn" id="langBtn">EN</button>
+                <div class="lang-menu" id="langMenu">
+                    <div data-lang="en">English</div>
+                    <div data-lang="es">Español</div>
+                    <div data-lang="fr">Français</div>
+                    <div data-lang="de">Deutsch</div>
+                    <div data-lang="zh">中文</div>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <h1 data-i18n="hero_title">Your English Just Got a Supercharge</h1>
+            <p data-i18n="hero_subtitle">GPT-4 Level AI Writing for Emails, Ads & Scripts</p>
+        </section>
+
+        <section id="pricing" class="price-card">
+            <h2 data-i18n="price_title">Get Started Today</h2>
+            <div style="font-size:2.5rem;color:#66fcf1;margin:1rem 0;">$9.9</div>
+            <p data-i18n="price_desc">= 30 Credits (1 Credit = 1 AI Request)</p>
+            <a href="#" class="buy-btn" data-i18n="buy_btn">BUY NOW - $9.9</a>
+            <p data-i18n="buy_note">30-Day Money-Back Guarantee</p>
+        </section>
+
+        <section class="code-box">
+            <h3 data-i18n="code_title">Already Purchased? Enter Your Code</h3>
+            <div style="margin:1rem 0;">
+                <input type="text" class="code-input" id="codeInput" data-i18n-placeholder="code_placeholder" placeholder="Enter your access code">
+                <button class="code-btn" id="codeBtn" data-i18n="code_validate">Validate</button>
+            </div>
+            <div id="codeMsg"></div>
+            <a href="chat.html" class="enter-chat" id="enterChatBtn" data-i18n="enter_chat">Enter Chat</a>
+        </section>
+
+        <section id="faq" class="faq">
+            <h2 style="text-align:center;margin-bottom:1.5rem;" data-i18n="faq_title">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq1_q">1. Do I need to sign up or create an account?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq1_a">No signup required. Purchase code, use immediately.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq2_q">2. How long do my credits last?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq2_a">Credits never expire.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq3_q">3. What can this AI create?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq3_a">Text, images, videos. Ads, emails, listings, etc.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq4_q">4. Is my data safe?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq4_a">100% private. We don’t store your data.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq5_q">5. What payment methods do you accept?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq5_a">All major credit cards, debit cards, PayPal via Gumroad.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq6_q">6. What is your refund policy?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq6_a">• ≤3 credits used: Full refund<br>• 4–10 credits used: 50% refund<br>• >10 credits used: No refund</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq7_q">7. How many tokens per request?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq7_a">512 input tokens + 1024 output tokens per credit.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq8_q">8. How fast is the response?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq8_a">Text: 5-10s | Images: 10-20s | Videos: 1-2min</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq9_q">9. Can I use this for commercial purposes?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq9_a">Yes. You own all rights to generated content.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    <span data-i18n="faq10_q">10. I have a problem, who do I contact?</span>
+                    <span>+</span>
+                </div>
+                <div class="faq-a" data-i18n="faq10_a">Email us at shangyunbai2026@outlook.com. Response within 24h.</div>
+            </div>
+        </section>
+
+        <footer>
+            <div>
+                <a href="#" data-i18n="footer_about">About Us</a>
+                <a href="#" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="#" data-i18n="footer_refund">Refund Policy</a>
+                <a href="#faq" data-i18n="footer_faq">FAQ</a>
+            </div>
+
+            <!-- 新增：完整双列隐私政策+退款政策 -->
+            <div class="footer-policies">
+                <div class="policy-section">
+                    <h3 data-i18n="privacy_title">Privacy Policy</h3>
+                    <p data-i18n="privacy_text">We do <strong>not transmit or upload your input data</strong> to any external servers. All user content is processed locally and stored only on your device. We never collect, share, or sell your personal or input data. Your privacy is fully protected.</p>
+                </div>
+                <div class="policy-section">
+                    <h3 data-i18n="refund_title">Refund Policy</h3>
+                    <p data-i18n="refund_text">• ≤3 credits used: Full refund<br>• 4–10 credits used: 50% refund<br>• >10 credits used: No refund</p>
+                </div>
+            </div>
+
+            <div style="margin:1rem 0;" data-i18n="contact_text">
+                Contact Us: <strong>shangyunbai2026@outlook.com</strong>
+            </div>
+            <div>© 2026 AI Creator Pro. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                nav_home:"Home",nav_price:"Pricing",nav_faq:"FAQ",
+                hero_title:"Your English Just Got a Supercharge",
+                hero_subtitle:"GPT-4 Level AI Writing for Emails, Ads & Scripts",
+                price_title:"Get Started Today",
+                price_desc:"= 30 Credits (1 Credit = 1 AI Request)",
+                buy_btn:"BUY NOW - $9.9",
+                buy_note:"30-Day Money-Back Guarantee",
+                code_title:"Already Purchased? Enter Your Code",
+                code_placeholder:"Enter your access code",
+                code_validate:"Validate",
+                enter_chat:"Enter Chat",
+                faq_title:"Frequently Asked Questions",
+                faq1_q:"1. Do I need to sign up or create an account?",
+                faq1_a:"<strong>No signup required.</strong> Just purchase your credits, receive your code, and start using immediately. No personal information needed.",
+                faq2_q:"2. How long do my credits last?",
+                faq2_a:"<strong>Credits never expire.</strong> Use them whenever you want, for as long as you need.",
+                faq3_q:"3. What can this AI create?",
+                faq3_a:"Our GPT-4 level AI can create <strong>text, images, and videos</strong>. It excels at: Amazon product listings, Facebook/Google ads, email marketing, sales copy, blog posts, social media content, product photos, marketing graphics, short promotional videos, and more.",
+                faq4_q:"4. Is my data safe?",
+                faq4_a:"<strong>100% private.</strong> We do NOT collect, store, or share any of your input data. All content is processed securely and never used for training.",
+                faq5_q:"5. What payment methods do you accept?",
+                faq5_a:"We accept all major credit cards, debit cards, and PayPal through Gumroad.",
+                faq6_q:"6. What is your refund policy?",
+                faq6_a:"• <strong>3 or fewer credits used</strong>: Full refund<br>• <strong>4-10 credits used</strong>: 50% refund<br>• <strong>More than 10 credits used</strong>: No refund<br>All refunds are processed within 24 hours.",
+                faq7_q:"7. How many tokens per request?",
+                faq7_a:"Each credit allows up to <strong>512 input tokens</strong> and <strong>1024 output tokens</strong> for text generation. For images and videos, one credit equals one generation.",
+                faq8_q:"8. How fast is the response?",
+                faq8_a:"Most text requests are completed in <strong>5-10 seconds</strong>. Images take 10-20 seconds. Videos take 1-2 minutes. No waiting in queues.",
+                faq9_q:"9. Can I use this for commercial purposes?",
+                faq9_a:"<strong>Yes.</strong> You own all rights to the content you generate. Use it for any personal or commercial project.",
+                faq10_q:"10. I have a problem, who do I contact?",
+                faq10_a:"Email us anytime at <strong>shangyunbai2026@outlook.com</strong>. We respond to all inquiries within 24 hours.",
+                footer_about:"About Us",footer_privacy:"Privacy Policy",
+                footer_refund:"Refund Policy",footer_faq:"FAQ",
+                privacy_title:"Privacy Policy",
+                privacy_text:"We do <strong>not transmit or upload your input data</strong> to any external servers. All user content is processed locally and stored only on your device. We never collect, share, or sell your personal or input data. Your privacy is fully protected.",
+                refund_title:"Refund Policy",
+                refund_text:"• ≤3 credits used: Full refund<br>• 4–10 credits used: 50% refund<br>• >10 credits used: No refund",
+                contact_text:"Contact Us: <strong>shangyunbai2026@outlook.com</strong>",
+                code_valid:"Code valid! Credits: {credits}",
+                code_invalid:"Invalid code."
+            },
+            es: {
+                nav_home:"Inicio",nav_price:"Precios",nav_faq:"Preguntas",
+                hero_title:"Tu inglés ha mejorado mucho",
+                hero_subtitle:"IA nivel GPT-4 para correos, anuncios y guiones",
+                price_title:"Comienza hoy",
+                price_desc:"=30 créditos (1 crédito=1 petición IA)",
+                buy_btn:"COMPRAR - $9.9",
+                buy_note:"Garantía de reembolso 30 días",
+                code_title:"¿Ya compraste? Ingresa tu código",
+                code_placeholder:"Escribe tu código",
+                code_validate:"Validar",
+                enter_chat:"Entrar al chat",
+                faq_title:"Preguntas frecuentes",
+                faq1_q:"1. ¿Necesito registrarme?",
+                faq1_a:"<strong>No es necesario.</strong> Compra y usa inmediatamente.",
+                faq2_q:"2. ¿Caducan los créditos?",
+                faq2_a:"<strong>No caducan nunca.</strong>",
+                faq3_q:"3. ¿Qué crea la IA?",
+                faq3_a:"Texto, imágenes, videos. Anuncios, correos, etc.",
+                faq4_q:"4. ¿Mis datos están seguros?",
+                faq4_a:"<strong>100% privados.</strong> No guardamos tus datos.",
+                faq5_q:"5. ¿Qué métodos de pago aceptan?",
+                faq5_a:"Aceptamos todas las tarjetas de crédito principales, tarjetas de débito y PayPal a través de Gumroad.",
+                faq6_q:"6. ¿Cuál es su política de reembolso?",
+                faq6_a:"• <strong>3 o menos créditos usados</strong>: Reembolso completo<br>• <strong>4-10 créditos usados</strong>: Reembolso del 50%<br>• <strong>Más de 10 créditos usados</strong>: Sin reembolso<br>Todos los reembolsos se procesan en 24 horas.",
+                faq7_q:"7. ¿Cuántos tokens por solicitud?",
+                faq7_a:"Cada crédito permite hasta <strong>512 tokens de entrada</strong> y <strong>1024 tokens de salida</strong> para generación de texto. Para imágenes y videos, un crédito equivale a una generación.",
+                faq8_q:"8. ¿Qué tan rápida es la respuesta?",
+                faq8_a:"La mayoría de las solicitudes de texto se completan en <strong>5-10 segundos</strong>. Las imágenes tardan 10-20 segundos. Los videos tardan 1-2 minutos. No esperando en colas.",
+                faq9_q:"9. ¿Puedo usar esto con fines comerciales?",
+                faq9_a:"<strong>Sí.</strong> Eres dueño de todos los derechos del contenido que generas.",
+                faq10_q:"10. Tengo un problema, ¿a quién contacto?",
+                faq10_a:"Envíanos un correo electrónico en cualquier momento a <strong>shangyunbai2026@outlook.com</strong>. Respondemos a todas las consultas en 24 horas.",
+                footer_about:"Sobre nosotros",footer_privacy:"Política de privacidad",
+                footer_refund:"Política de reembolso",footer_faq:"FAQ",
+                privacy_title:"Política de Privacidad",
+                privacy_text:"No <strong>transmitimos ni cargamos tus datos de entrada</strong> a ningún servidor externo. Todo el contenido del usuario se procesa localmente y se almacena solo en tu dispositivo. Nunca recopilamos, compartimos ni vendemos tus datos personales o de entrada. Tu privacidad está totalmente protegida.",
+                refund_title:"Política de Reembolso",
+                refund_text:"• ≤3 créditos usados: Reembolso completo<br>• 4–10 créditos usados: Reembolso del 50%<br>• >10 créditos usados: Sin reembolso",
+                contact_text:"Contáctanos: <strong>shangyunbai2026@outlook.com</strong>",
+                code_valid:"Código válido. Créditos: {credits}",
+                code_invalid:"Código inválido."
+            },
+            fr: {
+                nav_home:"Accueil",nav_price:"Tarifs",nav_faq:"FAQ",
+                hero_title:"Votre anglais boosté",
+                hero_subtitle:"IA GPT-4 pour emails, pubs et scripts",
+                price_title:"Commencez aujourd'hui",
+                price_desc:"=30 crédits (1 crédit=1 requête IA)",
+                buy_btn:"ACHETER - $9.9",
+                buy_note:"Garantie remboursement 30 jours",
+                code_title:"Acheté ? Entrez votre code",
+                code_placeholder:"Votre code d'accès",
+                code_validate:"Valider",
+                enter_chat:"Entrer dans le chat",
+                faq_title:"Questions fréquentes",
+                faq1_q:"1. Besoin de s'inscrire ?",
+                faq1_a:"<strong>Pas d'inscription.</strong> Achetez et utilisez immédiatement.",
+                faq2_q:"2. Durée de validité des crédits ?",
+                faq2_a:"<strong>Crédits sans expiration.</strong>",
+                faq3_q:"3. Que crée l'IA ?",
+                faq3_a:"Texte, images, vidéos. Emails, pubs, etc.",
+                faq4_q:"4. Mes données sont-elles sécurisées ?",
+                faq4_a:"<strong>100% privé.</strong> Nous ne stockons pas vos données.",
+                faq5_q:"5. Quels modes de paiement acceptez-vous ?",
+                faq5_a:"Nous acceptons toutes les principales cartes de crédit, cartes de débit et PayPal via Gumroad.",
+                faq6_q:"6. Quelle est votre politique de remboursement ?",
+                faq6_a:"• <strong>3 crédits ou moins utilisés</strong> : Remboursement complet<br>• <strong>4-10 crédits utilisés</strong> : Remboursement de 50%<br>• <strong>Plus de 10 crédits utilisés</strong> : Aucun remboursement<br>Tous les remboursements sont traités dans les 24 heures.",
+                faq7_q:"7. Combien de tokens par requête ?",
+                faq7_a:"Chaque crédit permet jusqu'à <strong>512 tokens d'entrée</strong> et <strong>1024 tokens de sortie</strong> pour la génération de texte. Pour les images et vidéos, un crédit équivaut à une génération.",
+                faq8_q:"8. Quelle est la vitesse de réponse ?",
+                faq8_a:"La plupart des requêtes texte sont traitées en <strong>5-10 secondes</strong>. Les images prennent 10-20 secondes. Les vidéos prennent 1-2 minutes. Pas d'attente en file d'attente.",
+                faq9_q:"9. Puis-je l'utiliser à des fins commerciales ?",
+                faq9_a:"<strong>Oui.</strong> Vous possédez tous les droits sur le contenu que vous générez.",
+                faq10_q:"10. J'ai un problème, qui contacter ?",
+                faq10_a:"Envoyez-nous un e-mail à tout moment à <strong>shangyunbai2026@outlook.com</strong>. Nous répondons à toutes les demandes dans les 24 heures.",
+                footer_about:"À propos",footer_privacy:"Confidentialité",
+                footer_refund:"Remboursement",footer_faq:"FAQ",
+                privacy_title:"Politique de Confidentialité",
+                privacy_text:"Nous ne <strong>transmettons ni ne téléchargeons vos données d'entrée</strong> sur aucun serveur externe. Tout le contenu utilisateur est traité localement et stocké uniquement sur votre appareil. Nous ne collectons, ne partageons et ne vendons jamais vos données personnelles ou d'entrée. Votre confidentialité est entièrement protégée.",
+                refund_title:"Politique de Remboursement",
+                refund_text:"• ≤3 crédits utilisés : Remboursement complet<br>• 4–10 crédits utilisés : Remboursement de 50%<br>• >10 crédits utilisés : Aucun remboursement",
+                contact_text:"Contact: <strong>shangyunbai2026@outlook.com</strong>",
+                code_valid:"Code valide. Crédits: {credits}",
+                code_invalid:"Code invalide."
+            },
+            de: {
+                nav_home:"Startseite",nav_price:"Preise",nav_faq:"FAQ",
+                hero_title:"Englisch stark verbessert",
+                hero_subtitle:"GPT-4 KI für E-Mails, Anzeigen, Skripte",
+                price_title:"Jetzt starten",
+                price_desc:"=30 Credits (1 Credit=1 KI-Anfrage)",
+                buy_btn:"KAUFEN - $9.9",
+                buy_note:"30-Tage-Geld-zurück-Garantie",
+                code_title:"Gekauft? Code eingeben",
+                code_placeholder:"Zugangscode eingeben",
+                code_validate:"Prüfen",
+                enter_chat:"Chat betreten",
+                faq_title:"Häufig gestellte Fragen",
+                faq1_q:"1. Muss ich mich anmelden?",
+                faq1_a:"<strong>Keine Anmeldung nötig.</strong> Kaufen und sofort nutzen.",
+                faq2_q:"2. Gültigkeit der Credits?",
+                faq2_a:"<strong>Credits laufen nie ab.</strong>",
+                faq3_q:"3. Was erstellt die KI?",
+                faq3_a:"Text, Bilder, Videos. E-Mails, Anzeigen etc.",
+                faq4_q:"4. Sind meine Daten sicher?",
+                faq4_a:"<strong>100% privat.</strong> Wir speichern keine Daten.",
+                faq5_q:"5. Welche Zahlungsmethoden akzeptieren Sie?",
+                faq5_a:"Wir akzeptieren alle gängigen Kreditkarten, Debitkarten und PayPal über Gumroad.",
+                faq6_q:"6. Rückerstattungsrichtlinie?",
+                faq6_a:"• <strong>3 oder weniger verwendete Credits</strong> : Volle Rückerstattung<br>• <strong>4-10 verwendete Credits</strong> : 50% Rückerstattung<br>• <strong>Mehr als 10 verwendete Credits</strong> : Keine Rückerstattung<br>Alle Rückerstattungen werden innerhalb von 24 Stunden bearbeitet.",
+                faq7_q:"7. Wie viele Tokens pro Anfrage?",
+                faq7_a:"Jeder Credit erlaubt bis zu <strong>512 Eingabe-Tokens</strong> und <strong>1024 Ausgabe-Tokens</strong> für die Textgenerierung. Für Bilder und Videos entspricht ein Credit einer Generierung.",
+                faq8_q:"8. Wie schnell ist die Antwort?",
+                faq8_a:"Die meisten Textanfragen werden in <strong>5-10 Sekunden</strong> abgeschlossen. Bilder dauern 10-20 Sekunden. Videos dauern 1-2 Minuten. Kein Warten in Warteschlangen.",
+                faq9_q:"9. Kann ich dies für kommerzielle Zwecke verwenden?",
+                faq9_a:"<strong>Ja.</strong> Sie besitzen alle Rechte an dem von Ihnen generierten Inhalt.",
+                faq10_q:"10. Ich habe ein Problem, wen kontaktiere ich?",
+                faq10_a:"Senden Sie uns jederzeit eine E-Mail an <strong>shangyunbai2026@outlook.com</strong>. Wir beantworten alle Anfragen innerhalb von 24 Stunden.",
+                footer_about:"Über uns",footer_privacy:"Datenschutz",
+                footer_refund:"Rückerstattung",footer_faq:"FAQ",
+                privacy_title:"Datenschutzrichtlinie",
+                privacy_text:"Wir <strong>übertragen oder laden Ihre Eingabedaten nicht</strong> auf externe Server hoch. Alle Benutzerinhalte werden lokal verarbeitet und nur auf Ihrem Gerät gespeichert. Wir sammeln, teilen oder verkaufen niemals Ihre persönlichen oder Eingabedaten. Ihre Privatsphäre ist vollständig geschützt.",
+                refund_title:"Rückerstattungsrichtlinie",
+                refund_text:"• ≤3 Credits verwendet: Volle Rückerstattung<br>• 4–10 Credits verwendet: 50% Rückerstattung<br>• >10 Credits verwendet: Keine Rückerstattung",
+                contact_text:"Kontakt: <strong>shangyunbai2026@outlook.com</strong>",
+                code_valid:"Code gültig. Credits: {credits}",
+                code_invalid:"Ungültiger Code."
+            },
+            zh: {
+                nav_home:"首页",nav_price:"价格",nav_faq:"常见问题",
+                hero_title:"你的英语能力大幅提升",
+                hero_subtitle:"GPT-4级AI写作：邮件、广告、脚本",
+                price_title:"立即开始",
+                price_desc:"=30次额度（1次=1次AI请求）",
+                buy_btn:"立即购买 - $9.9",
+                buy_note:"30天退款保证",
+                code_title:"已购买？输入卡密",
+                code_placeholder:"输入访问卡密",
+                code_validate:"验证",
+                enter_chat:"进入聊天",
+                faq_title:"常见问题解答",
+                faq1_q:"1. 需要注册账号吗？",
+                faq1_a:"<strong>无需注册。</strong>购买卡密即可使用。",
+                faq2_q:"2. 额度会过期吗？",
+                faq2_a:"<strong>永久有效。</strong>",
+                faq3_q:"3. AI能生成什么？",
+                faq3_a:"文字、图片、视频；广告、邮件、商品文案等。",
+                faq4_q:"4. 数据安全吗？",
+                faq4_a:"<strong>100%隐私保护，不存储用户数据。</strong>",
+                faq5_q:"5. 你们接受哪些支付方式？",
+                faq5_a:"我们通过Gumroad接受所有主流信用卡、借记卡和PayPal支付。",
+                faq6_q:"6. 你们的退款政策是什么？",
+                faq6_a:"• <strong>使用次数≤3次</strong>：全额退款<br>• <strong>使用次数4-10次</strong>：退款50%<br>• <strong>使用次数>10次</strong>：不予退款<br>所有退款申请将在24小时内处理完毕。",
+                faq7_q:"7. 每次请求可以使用多少令牌？",
+                faq7_a:"每次使用1次额度，文字生成最多支持<strong>512个输入令牌</strong>和<strong>1024个输出令牌</strong>。图片和视频生成每次消耗1次额度。",
+                faq8_q:"8. 响应速度有多快？",
+                faq8_a:"大多数文字请求会在<strong>5-10秒内</strong>完成。图片生成需要10-20秒。视频生成需要1-2分钟。无需排队等待。",
+                faq9_q:"9. 我可以将生成的内容用于商业用途吗？",
+                faq9_a:"<strong>可以。</strong>您拥有生成内容的所有权利。",
+                faq10_q:"10. 我遇到问题该联系谁？",
+                faq10_a:"随时发送邮件至 <strong>shangyunbai2026@outlook.com</strong>。我们会在24小时内回复所有咨询。",
+                footer_about:"关于我们",footer_privacy:"隐私政策",
+                footer_refund:"退款政策",footer_faq:"常见问题",
+                privacy_title:"隐私政策",
+                privacy_text:"我们<strong>不会传输或上传您的输入数据</strong>到任何外部服务器。所有用户内容均在本地处理，仅存储在您的设备上。我们绝不会收集、分享或出售您的个人或输入数据。您的隐私得到全面保护。",
+                refund_title:"退款政策",
+                refund_text:"• ≤3次使用：全额退款<br>• 4–10次使用：退款50%<br>• >10次使用：不予退款",
+                contact_text:"联系我们：<strong>shangyunbai2026@outlook.com</strong>",
+                code_valid:"卡密有效，剩余额度：{credits}",
+                code_invalid:"卡密无效"
+            }
+        };
+
+        let currentLang = "en";
+
+        // 语言按钮点击（最简单的toggle）
+        const langBtn = document.getElementById("langBtn");
+        const langMenu = document.getElementById("langMenu");
+        langBtn.addEventListener("click", function(e){
+            e.stopPropagation();
+            langMenu.classList.toggle("show");
+        });
+        // 点击页面其他地方关闭
+        document.addEventListener("click", function(){
+            langMenu.classList.remove("show");
+        });
+
+        // 选择语言
+        document.querySelectorAll(".lang-menu div").forEach(item=>{
+            item.addEventListener("click", function(){
+                const lang = this.getAttribute("data-lang");
+                currentLang = lang;
+                langBtn.innerText = lang.toUpperCase();
+                applyLang(lang);
+                langMenu.classList.remove("show");
+            });
+        });
+
+        // 应用翻译
+        function applyLang(lang){
+            const t = translations[lang];
+            document.querySelectorAll("[data-i18n]").forEach(el=>{
+                const key = el.getAttribute("data-i18n");
+                if(t[key]) el.innerHTML = t[key];
+            });
+            document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+                const key = el.getAttribute("data-i18n-placeholder");
+                if(t[key]) el.placeholder = t[key];
+            });
+        }
+
+        // FAQ展开/收起
+        function toggleFaq(el){
+            const ans = el.nextElementSibling;
+            ans.classList.toggle("show");
+            el.querySelector("span:last-child").innerText = ans.classList.contains("show") ? "-" : "+";
+        }
+
+        // 简单卡密验证
+        const validCodes = {
+            "DEMO-0000-0000":3,
+            "ABC-1234-5678":30,
+            "XYZ-9999-8888":10
+        };
+        const codeBtn = document.getElementById("codeBtn");
+        const codeInput = document.getElementById("codeInput");
+        const codeMsg = document.getElementById("codeMsg");
+        const enterChatBtn = document.getElementById("enterChatBtn");
+
+        codeBtn.addEventListener("click", function(){
+            const code = codeInput.value.trim();
+            if(validCodes[code]){
+                const credits = validCodes[code];
+                codeMsg.innerHTML = translations[currentLang].code_valid.replace("{credits}", credits);
+                codeMsg.style.color = "#22c55e";
+                enterChatBtn.style.display = "inline-block";
+                localStorage.setItem("ai_credits", credits);
+            } else {
+                codeMsg.innerHTML = translations[currentLang].code_invalid;
+                codeMsg.style.color = "#ef4444";
+                enterChatBtn.style.display = "none";
+            }
+        });
+
+        // 初始化英文
+        applyLang("en");
+    </script>
+</body>
+</html>

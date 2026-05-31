@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pro Card - Template Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0b10 0%, #12151f 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            background-image: 
+                linear-gradient(rgba(10, 11, 16, 0.95), rgba(18, 21, 31, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(102, 252, 241, 0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+        }
+
+        /* 全局容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #66fcf1;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #66fcf1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0b10;
+            font-weight: bold;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .credits-display {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .recharge-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            text-decoration: none;
+        }
+
+        .recharge-button:hover {
+            background: #2563eb;
+        }
+
+        /* 语言切换器 */
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-button {
+            background: rgba(102, 252, 241, 0.1);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            color: #66fcf1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .language-button:hover {
+            background: rgba(102, 252, 241, 0.2);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: #1f2833;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .language-option:hover {
+            background: rgba(102, 252, 241, 0.1);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 150px);
+        }
+
+        /* 左侧边栏 */
+        .sidebar {
+            background: rgba(31, 40, 51, 0.8);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(102, 252, 241, 0.15);
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #66fcf1;
+        }
+
+        .history-item {
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(102, 252, 241, 0.1);
+        }
+
+        /* 右侧内容区 */
+        .content-area {
+            background: rgba(31, 40, 51, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 252, 241, 0.15);
+            overflow-y: auto;
+        }
+
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            background: rgba(102, 252, 241, 0.1);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            color: #c5c6c7;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(102, 252, 241, 0.2);
+        }
+
+        /* Free Chat 输入区域样式 */
+        .free-chat-area {
+            display: block;
+            width: 100%;
+        }
+        .chat-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .chat-input {
+            width: 100%;
+            background: rgba(47, 57, 65, 0.8);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            color: #fff;
+            font-size: 1rem;
+            min-height: 120px;
+            resize: vertical;
+        }
+        .chat-submit-btn {
+            align-self: flex-end;
+            background: #66fcf1;
+            color: #0a0b10;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+        .chat-submit-btn:hover {
+            background: #4ff0e6;
+        }
+        .chat-result-area {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(47, 57, 65, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            min-height: 80px;
+        }
+
+        /* 模板网格 */
+        .templates-grid {
+            display: none; /* 默认隐藏，Template Hub标签激活时显示 */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .templates-grid.show {
+            display: grid;
+        }
+
+        .template-card {
+            background: rgba(47, 57, 65, 0.8);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 252, 241, 0.3);
+        }
+
+        .template-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(102, 252, 241, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: #66fcf1;
+            font-size: 1.5rem;
+        }
+
+        .template-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-desc {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .template-add {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: rgba(102, 252, 241, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #66fcf1;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .template-add:hover {
+            background: rgba(102, 252, 241, 0.2);
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <nav>
+            <!-- 已修正：Logo链接指向amazon-generator.html -->
+            <a href="amazon-generator.html" class="logo">
+                <div class="logo-icon">AI</div>
+                <span>AI Pro Card</span>
+            </a>
+            <div class="nav-right">
+                <div class="language-switcher">
+                    <button class="language-button" id="languageButton">EN</button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        <div class="language-option" data-lang="en">English</div>
+                        <div class="language-option" data-lang="es">Español</div>
+                        <div class="language-option" data-lang="fr">Français</div>
+                        <div class="language-option" data-lang="de">Deutsch</div>
+                        <div class="language-option" data-lang="zh">中文</div>
+                    </div>
+                </div>
+                <div class="credits-display" data-i18n="credits_left">27 Credits Left</div>
+                <!-- 已修正：充值按钮链接指向amazon-generator.html#pricing -->
+                <a href="amazon-generator.html#pricing" class="recharge-button" data-i18n="recharge">Recharge</a>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧边栏 -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title" data-i18n="history">History</h3>
+                    <div class="history-item" data-i18n="no_history">No history yet</div>
+                </div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <!-- 标签页 -->
+                <div class="tabs">
+                    <button class="tab-button active" id="freeChatTab" data-i18n="free_chat">Free Chat</button>
+                    <button class="tab-button" id="templateHubTab" data-i18n="template_hub">Template Hub</button>
+                </div>
+
+                <!-- Free Chat 内容区 -->
+                <div class="free-chat-area" id="freeChatArea">
+                    <div class="chat-input-container">
+                        <textarea 
+                            class="chat-input" 
+                            placeholder="请输入您的需求..." 
+                            data-i18n="chat_input_placeholder"
+                        ></textarea>
+                        <button class="chat-submit-btn" data-i18n="chat_submit_btn">提交并生成</button>
+                    </div>
+                    <div class="chat-result-area" id="chatResultArea" data-i18n="chat_result_tips">
+                        生成结果将显示在这里...
+                    </div>
+                </div>
+
+                <!-- 模板网格 -->
+                <div class="templates-grid" id="templatesGrid">
+                    <div class="template-card" data-template="student_writing">
+                        <div class="template-icon">✓</div>
+                        <h3 class="template-title" data-i18n="student_writing">Student Writing</h3>
+                        <p class="template-desc" data-i18n="student_writing_desc">Essays, reports, and academic writing</p>
+                        <div class="template-add">+</div>
+                    </div>
+
+                    <div class="template-card" data-template="mom_life_creator">
+                        <div class="template-icon">✓</div>
+                        <h3 class="template-title" data-i18n="mom_life_creator">Mom Life Creator</h3>
+                        <p class="template-desc" data-i18n="mom_life_desc">Parenting content and social media</p>
+                        <div class="template-add">+</div>
+                    </div>
+
+                    <div class="template-card" data-template="ecommerce_listing">
+                        <div class="template-icon">✓</div>
+                        <h3 class="template-title" data-i18n="ecommerce_listing">E-commerce Listing</h3>
+                        <p class="template-desc" data-i18n="ecommerce_desc">Amazon, eBay, and Shopify products</p>
+                        <div class="template-add">+</div>
+                    </div>
+
+                    <div class="template-card" data-template="email_ads">
+                        <div class="template-icon">✓</div>
+                        <h3 class="template-title" data-i18n="email_ads">Email & Ads</h3>
+                        <p class="template-desc" data-i18n="email_ads_desc">Marketing emails and ad copy</p>
+                        <div class="template-add">+</div>
+                    </div>
+
+                    <div class="template-card" data-template="general_chat">
+                        <div class="template-icon">✓</div>
+                        <h3 class="template-title" data-i18n="general_chat">General Chat</h3>
+                        <p class="template-desc" data-i18n="general_chat_desc">Free conversation and questions</p>
+                        <div class="template-add">+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据（和首页保持一致）
+        const translations = {
+            en: {
+                credits_left: "27 Credits Left",
+                recharge: "Recharge",
+                history: "History",
+                no_history: "No history yet",
+                free_chat: "Free Chat",
+                template_hub: "Template Hub",
+                student_writing: "Student Writing",
+                student_writing_desc: "Essays, reports, and academic writing",
+                mom_life_creator: "Mom Life Creator",
+                mom_life_desc: "Parenting content and social media",
+                ecommerce_listing: "E-commerce Listing",
+                ecommerce_desc: "Amazon, eBay, and Shopify products",
+                email_ads: "Email & Ads",
+                email_ads_desc: "Marketing emails and ad copy",
+                general_chat: "General Chat",
+                general_chat_desc: "Free conversation and questions",
+                chat_input_placeholder: "Enter your requirements...",
+                chat_submit_btn: "Submit & Generate",
+                chat_result_tips: "Generated results will be displayed here...",
+                empty_input: "Please enter your requirements!"
+            },
+            es: {
+                credits_left: "27 Créditos Restantes",
+                recharge: "Recargar",
+                history: "Historial",
+                no_history: "Aún no hay historial",
+                free_chat: "Chat Libre",
+                template_hub: "Centro de Plantillas",
+                student_writing: "Escritura Estudiantil",
+                student_writing_desc: "Ensayos, informes y escritura académica",
+                mom_life_creator: "Creadora de Vida de Mamá",
+                mom_life_desc: "Contenido de crianza y redes sociales",
+                ecommerce_listing: "Listado de Comercio Electrónico",
+                ecommerce_desc: "Productos de Amazon, eBay y Shopify",
+                email_ads: "Correos y Anuncios",
+                email_ads_desc: "Correos de marketing y textos publicitarios",
+                general_chat: "Chat General",
+                general_chat_desc: "Conversación libre y preguntas",
+                chat_input_placeholder: "Ingrese sus requisitos...",
+                chat_submit_btn: "Enviar y Generar",
+                chat_result_tips: "Los resultados generados se mostrarán aquí...",
+                empty_input: "¡Por favor ingrese sus requisitos!"
+            },
+            fr: {
+                credits_left: "27 Crédits Restants",
+                recharge: "Recharger",
+                history: "Historique",
+                no_history: "Pas encore d'historique",
+                free_chat: "Chat Libre",
+                template_hub: "Hub de Modèles",
+                student_writing: "Rédaction Étudiante",
+                student_writing_desc: "Essais, rapports et écriture académique",
+                mom_life_creator: "Créatrice Vie de Maman",
+                mom_life_desc: "Contenido parental et réseaux sociaux",
+                ecommerce_listing: "Annonce E-commerce",
+                ecommerce_desc: "Produits Amazon, eBay et Shopify",
+                email_ads: "E-mails et Publicités",
+                email_ads_desc: "E-mails marketing et textes publicitaires",
+                general_chat: "Chat Général",
+                general_chat_desc: "Conversation libre et questions",
+                chat_input_placeholder: "Entrez vos exigences...",
+                chat_submit_btn: "Soumettre et Générer",
+                chat_result_tips: "Les résultats générés s'afficheront ici...",
+                empty_input: "Veuillez entrer vos exigences !"
+            },
+            de: {
+                credits_left: "27 Credits Übrig",
+                recharge: "Aufladen",
+                history: "Verlauf",
+                no_history: "Noch kein Verlauf",
+                free_chat: "Freier Chat",
+                template_hub: "Vorlagen-Hub",
+                student_writing: "Studentisches Schreiben",
+                student_writing_desc: "Aufsätze, Berichte und akademische Schriften",
+                mom_life_creator: "Mutter-Leben-Erstellerin",
+                mom_life_desc: "Elterninhalte und soziale Medien",
+                ecommerce_listing: "E-Commerce-Eintrag",
+                ecommerce_desc: "Amazon-, eBay- und Shopify-Produkte",
+                email_ads: "E-Mails & Anzeigen",
+                email_ads_desc: "Marketing-E-Mails und Werbetexte",
+                general_chat: "Allgemeiner Chat",
+                general_chat_desc: "Freie Konversation und Fragen",
+                chat_input_placeholder: "Geben Sie Ihre Anforderungen ein...",
+                chat_submit_btn: "Einreichen und Generieren",
+                chat_result_tips: "Generierte Ergebnisse werden hier angezeigt...",
+                empty_input: "Bitte geben Sie Ihre Anforderungen ein!"
+            },
+            zh: {
+                credits_left: "剩余27次额度",
+                recharge: "充值",
+                history: "历史记录",
+                no_history: "暂无历史记录",
+                free_chat: "自由聊天",
+                template_hub: "模板中心",
+                student_writing: "学生写作",
+                student_writing_desc: "论文、报告和学术写作",
+                mom_life_creator: "妈妈生活创作者",
+                mom_life_desc: "育儿内容和社交媒体",
+                ecommerce_listing: "电商商品列表",
+                ecommerce_desc: "亚马逊、eBay和Shopify产品",
+                email_ads: "邮件和广告",
+                email_ads_desc: "营销邮件和广告文案",
+                general_chat: "通用聊天",
+                general_chat_desc: "自由对话和问题解答",
+                chat_input_placeholder: "请输入您的需求...",
+                chat_submit_btn: "提交并生成",
+                chat_result_tips: "生成结果将显示在这里...",
+                empty_input: "请输入需求内容！"
+            }
+        };
+
+        // 语言切换功能
+        const languageButton = document.getElementById('languageButton');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const languageOptions = document.querySelectorAll('.language-option');
+
+        // 切换语言下拉菜单显示
+        languageButton.addEventListener('click', () => {
+            languageDropdown.classList.toggle('show');
+        });
+
+        // 点击其他地方关闭下拉菜单
+        window.addEventListener('click', (e) => {
+            if (!languageButton.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+
+        // 选择语言
+        languageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                languageButton.textContent = lang.toUpperCase();
+                languageDropdown.classList.remove('show');
+            });
+        });
+
+        // 更改页面语言
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                    // 处理placeholder属性
+                    if (element.tagName === 'TEXTAREA' && key === 'chat_input_placeholder') {
+                        element.placeholder = translations[lang][key];
+                    }
+                }
+            });
+            document.documentElement.lang = lang;
+            
+            // 保存语言偏好到本地存储
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // 页面加载时恢复语言偏好
+        window.addEventListener('load', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            changeLanguage(savedLang);
+            languageButton.textContent = savedLang.toUpperCase();
+        });
+
+        // 标签页切换逻辑
+        const freeChatTab = document.getElementById('freeChatTab');
+        const templateHubTab = document.getElementById('templateHubTab');
+        const freeChatArea = document.getElementById('freeChatArea');
+        const templatesGrid = document.getElementById('templatesGrid');
+
+        // 初始状态：Free Chat显示，Template Hub隐藏
+        freeChatTab.addEventListener('click', () => {
+            freeChatTab.classList.add('active');
+            templateHubTab.classList.remove('active');
+            freeChatArea.style.display = 'block';
+            templatesGrid.classList.remove('show');
+        });
+
+        templateHubTab.addEventListener('click', () => {
+            templateHubTab.classList.add('active');
+            freeChatTab.classList.remove('active');
+            freeChatArea.style.display = 'none';
+            templatesGrid.classList.add('show');
+        });
+
+        // ===================== 核心功能1：Free Chat 提交到Vercel并返回结果 =====================
+        const chatInput = document.querySelector('.chat-input');
+        const chatSubmitBtn = document.querySelector('.chat-submit-btn');
+        const chatResultArea = document.getElementById('chatResultArea');
+
+        // 替换为你的Vercel API地址（需自行部署接口）
+        const VERCEL_API_URL = 'https://your-vercel-project.vercel.app/api/generate';
+
+        chatSubmitBtn.addEventListener('click', async () => {
+            const userInput = chatInput.value.trim();
+            if (!userInput) {
+                // 多语言提示：获取当前语言的空输入提示
+                const currentLang = document.documentElement.lang || 'en';
+                alert(translations[currentLang].empty_input || 'Please enter your requirements!');
+                return;
+            }
+
+            try {
+                chatResultArea.textContent = translations[document.documentElement.lang].chat_result_tips.replace('将显示在这里...', '正在生成...') || 'Generating...';
+                // 调用Vercel API
+                const response = await fetch(VERCEL_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: userInput })
+                });
+
+                if (!response.ok) throw new Error('请求失败');
+                const result = await response.json();
+                
+                // 显示返回的产品结果
+                chatResultArea.textContent = result.data || '生成失败，请重试';
+            } catch (error) {
+                console.error('Vercel API请求错误:', error);
+                chatResultArea.textContent = '生成出错：' + error.message;
+            }
+        });
+
+        // ===================== 核心功能2：模板选择记录并跳转至amazon-generator.html =====================
+        // 【关键修复】：彻底移除所有可能指向third-page.html的代码
+        // 【关键修复】：添加强制跳转，防止缓存或其他事件干扰
+        const templateCards = document.querySelectorAll('.template-card');
+        
+        // 先移除所有已存在的点击事件监听器（防止重复绑定）
+        templateCards.forEach(card => {
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+        });
+
+        // 重新绑定点击事件，确保只执行我们的跳转逻辑
+        const newTemplateCards = document.querySelectorAll('.template-card');
+        newTemplateCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止任何默认行为
+                e.stopPropagation(); // 阻止事件冒泡
+                
+                // 获取模板标识和名称
+                const templateKey = card.getAttribute('data-template');
+                const templateTitle = card.querySelector('.template-title').textContent;
+                
+                // 记录到localStorage（amazon-generator.html可读取）
+                localStorage.setItem('selectedTemplate', JSON.stringify({
+                    key: templateKey,
+                    title: templateTitle,
+                    selectTime: new Date().toISOString()
+                }));
+
+                // 【强制跳转】：使用绝对路径方式，确保跳转到amazon-generator.html
+                console.log('正在跳转到：amazon-generator.html');
+                window.location.replace('amazon-generator.html');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Product Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0b10 0%, #12151f 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            background-image: 
+                linear-gradient(rgba(10, 11, 16, 0.95), rgba(18, 21, 31, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(102, 252, 241, 0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+        }
+
+        /* 全局容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* 顶部导航栏 */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #66fcf1;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #66fcf1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0b10;
+            font-weight: bold;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .credits-display {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .recharge-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            text-decoration: none;
+        }
+
+        .recharge-button:hover {
+            background: #2563eb;
+        }
+
+        /* 语言切换器 */
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-button {
+            background: rgba(102, 252, 241, 0.1);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            color: #66fcf1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .language-button:hover {
+            background: rgba(102, 252, 241, 0.2);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: #1f2833;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .language-option:hover {
+            background: rgba(102, 252, 241, 0.1);
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-tags {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tag {
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .tag.secondary {
+            background: rgba(102, 252, 241, 0.1);
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            color: #66fcf1;
+        }
+
+        /* 主内容区域 */
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* 输入区域 */
+        .input-section {
+            background: rgba(31, 40, 51, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 252, 241, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #c5c6c7;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(47, 57, 65, 0.8);
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #66fcf1;
+        }
+
+        .form-select {
+            width: 100%;
+            background: rgba(47, 57, 65, 0.8);
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2366fcf1"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5rem;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #66fcf1;
+        }
+
+        .generate-button {
+            width: 100%;
+            background: linear-gradient(90deg, #aaff80, #66fcf1);
+            color: #0a0b10;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .generate-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(102, 252, 241, 0.3);
+        }
+
+        /* 输出区域 */
+        .output-section {
+            background: rgba(31, 40, 51, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 252, 241, 0.15);
+        }
+
+        .output-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #c5c6c7;
+        }
+
+        .output-content {
+            background: rgba(47, 57, 65, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 300px;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #66fcf1;
+        }
+
+        .bullet-points {
+            list-style: none;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(102, 252, 241, 0.1);
+        }
+
+        .bullet-point:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .bullet-number {
+            width: 28px;
+            height: 28px;
+            background: rgba(102, 252, 241, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #66fcf1;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .bullet-text {
+            flex: 1;
+            font-size: 1.1rem;
+        }
+
+        .copy-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            float: right;
+        }
+
+        .copy-button:hover {
+            background: #2563eb;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 900px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <nav>
+            <a href="chat.html" class="logo">
+                <div class="logo-icon">AI</div>
+                <span>AI Pro Card</span>
+            </a>
+            <div class="nav-right">
+                <div class="language-switcher">
+                    <button class="language-button" id="languageButton">EN</button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        <div class="language-option" data-lang="en">English</div>
+                        <div class="language-option" data-lang="es">Español</div>
+                        <div class="language-option" data-lang="fr">Français</div>
+                        <div class="language-option" data-lang="de">Deutsch</div>
+                        <div class="language-option" data-lang="zh">中文</div>
+                    </div>
+                </div>
+                <div class="credits-display" data-i18n="credits_left">27 Credits Left</div>
+                <a href="index.html#pricing" class="recharge-button" data-i18n="recharge">Recharge</a>
+            </div>
+        </nav>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title" data-i18n="amazon_title">Amazon Product Title + 5 Bullet Points</h1>
+            <div class="page-tags">
+                <span class="tag" data-i18n="ecommerce_tag">E-commerce</span>
+                <span class="tag secondary">/ Amazon</span>
+                <span class="tag secondary">Amazon</span>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="generator-container">
+            <!-- 输入区域 -->
+            <div class="input-section">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="product_title_label">Product Title</label>
+                    <input type="text" class="form-input" data-i18n-placeholder="product_title_placeholder" placeholder="Enter product title">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" data-i18n="bullet_points_label">Bullet Point 1-3</label>
+                    <select class="form-select">
+                        <option value="1">1 Bullet Point</option>
+                        <option value="2">2 Bullet Points</option>
+                        <option value="3" selected>3 Bullet Points</option>
+                        <option value="4">4 Bullet Points</option>
+                        <option value="5">5 Bullet Points</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" data-i18n="bullet_points_input_label">Enter bullet points</label>
+                    <textarea class="form-input" rows="5" data-i18n-placeholder="bullet_points_placeholder" placeholder="Enter bullet points"></textarea>
+                </div>
+
+                <button class="generate-button" data-i18n="generate_now">Generate Now</button>
+            </div>
+
+            <!-- 输出区域 -->
+            <div class="output-section">
+                <div class="output-title" data-i18n="sample_title">Sample Amazon product Title</div>
+                <div class="output-content">
+                    <div class="product-title">Premium Organic Cotton T-Shirt</div>
+                    <ul class="bullet-points">
+                        <li class="bullet-point">
+                            <div class="bullet-number">1</div>
+                            <div class="bullet-text" data-i18n="bullet1">Soft & Breathable Fabric</div>
+                        </li>
+                        <li class="bullet-point">
+                            <div class="bullet-number">2</div>
+                            <div class="bullet-text" data-i18n="bullet2">Sustainable Sourcing</div>
+                        </li>
+                        <li class="bullet-point">
+                            <div class="bullet-number">3</div>
+                            <div class="bullet-text" data-i18n="bullet3">Available in 5 Colors</div>
+                        </li>
+                        <li class="bullet-point">
+                            <div class="bullet-number">4</div>
+                            <div class="bullet-text" data-i18n="bullet4">Slim Fit Design</div>
+                        </li>
+                        <li class="bullet-point">
+                            <div class="bullet-number">5</div>
+                            <div class="bullet-text" data-i18n="bullet5">Easy Care Instructions</div>
+                        </li>
+                    </ul>
+                </div>
+                <button class="copy-button" data-i18n="copy_to_clipboard">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 多语言翻译数据
+        const translations = {
+            en: {
+                credits_left: "27 Credits Left",
+                recharge: "Recharge",
+                amazon_title: "Amazon Product Title + 5 Bullet Points",
+                ecommerce_tag: "E-commerce",
+                product_title_label: "Product Title",
+                product_title_placeholder: "Enter product title",
+                bullet_points_label: "Bullet Point 1-3",
+                bullet_points_input_label: "Enter bullet points",
+                bullet_points_placeholder: "Enter bullet points",
+                generate_now: "Generate Now",
+                sample_title: "Sample Amazon product Title",
+                bullet1: "Soft & Breathable Fabric",
+                bullet2: "Sustainable Sourcing",
+                bullet3: "Available in 5 Colors",
+                bullet4: "Slim Fit Design",
+                bullet5: "Easy Care Instructions",
+                copy_to_clipboard: "Copy to Clipboard"
+            },
+            es: {
+                credits_left: "27 Créditos Restantes",
+                recharge: "Recargar",
+                amazon_title: "Título de Producto Amazon + 5 Puntos de Bala",
+                ecommerce_tag: "Comercio Electrónico",
+                product_title_label: "Título del Producto",
+                product_title_placeholder: "Ingrese el título del producto",
+                bullet_points_label: "Puntos de Bala 1-3",
+                bullet_points_input_label: "Ingrese los puntos de bala",
+                bullet_points_placeholder: "Ingrese los puntos de bala",
+                generate_now: "Generar Ahora",
+                sample_title: "Título de Producto Amazon de Ejemplo",
+                bullet1: "Tela Suave y Transpirable",
+                bullet2: "Suministro Sostenible",
+                bullet3: "Disponible en 5 Colores",
+                bullet4: "Diseño Ajustado",
+                bullet5: "Instrucciones de Cuidado Fáciles",
+                copy_to_clipboard: "Copiar al Portapapeles"
+            },
+            fr: {
+                credits_left: "27 Crédits Restants",
+                recharge: "Recharger",
+                amazon_title: "Titre de Produit Amazon + 5 Points Clés",
+                ecommerce_tag: "E-commerce",
+                product_title_label: "Titre du Produit",
+                product_title_placeholder: "Entrez le titre du produit",
+                bullet_points_label: "Points Clés 1-3",
+                bullet_points_input_label: "Entrez les points clés",
+                bullet_points_placeholder: "Entrez les points clés",
+                generate_now: "Générer Maintenant",
+                sample_title: "Exemple de Titre de Produit Amazon",
+                bullet1: "Tissu Doux et Respirant",
+                bullet2: "Approvisionnement Durable",
+                bullet3: "Disponible en 5 Couleurs",
+                bullet4: "Design Ajusté",
+                bullet5: "Instructions d'Entretien Faciles",
+                copy_to_clipboard: "Copier dans le Presse-papiers"
+            },
+            de: {
+                credits_left: "27 Credits Übrig",
+                recharge: "Aufladen",
+                amazon_title: "Amazon-Produkttitel + 5 Aufzählungspunkte",
+                ecommerce_tag: "E-Commerce",
+                product_title_label: "Produkttitel",
+                product_title_placeholder: "Geben Sie den Produkttitel ein",
+                bullet_points_label: "Aufzählungspunkte 1-3",
+                bullet_points_input_label: "Geben Sie die Aufzählungspunkte ein",
+                bullet_points_placeholder: "Geben Sie die Aufzählungspunkte ein",
+                generate_now: "Jetzt Generieren",
+                sample_title: "Beispiel-Amazon-Produkttitel",
+                bullet1: "Weiches und Atmungsaktives Gewebe",
+                bullet2: "Nachhaltige Beschaffung",
+                bullet3: "In 5 Farben erhältlich",
+                bullet4: "Schlanke Passform",
+                bullet5: "Einfache Pflegeanweisungen",
+                copy_to_clipboard: "In die Zwischenablage Kopieren"
+            },
+            zh: {
+                credits_left: "剩余27次额度",
+                recharge: "充值",
+                amazon_title: "亚马逊商品标题 + 5个要点",
+                ecommerce_tag: "电商",
+                product_title_label: "商品标题",
+                product_title_placeholder: "输入商品标题",
+                bullet_points_label: "要点数量 1-3",
+                bullet_points_input_label: "输入要点",
+                bullet_points_placeholder: "输入要点",
+                generate_now: "立即生成",
+                sample_title: "示例亚马逊商品标题",
+                bullet1: "柔软透气面料",
+                bullet2: "可持续采购",
+                bullet3: "5种颜色可选",
+                bullet4: "修身设计",
+                bullet5: "易于护理",
+                copy_to_clipboard: "复制到剪贴板"
+            }
+        };
+
+        // 语言切换功能
+        const languageButton = document.getElementById('languageButton');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const languageOptions = document.querySelectorAll('.language-option');
+
+        // 切换语言下拉菜单显示
+        languageButton.addEventListener('click', () => {
+            languageDropdown.classList.toggle('show');
+        });
+
+        // 点击其他地方关闭下拉菜单
+        window.addEventListener('click', (e) => {
+            if (!languageButton.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageDropdown.classList.remove('show');
+            }
+        });
+
+        // 选择语言
+        languageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.getAttribute('data-lang');
+                changeLanguage(lang);
+                languageButton.textContent = lang.toUpperCase();
+                languageDropdown.classList.remove('show');
+            });
+        });
+
+        // 更改页面语言
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // 处理placeholder
+            const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholders.forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+
+            document.documentElement.lang = lang;
+            
+            // 保存语言偏好到本地存储
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // 页面加载时恢复语言偏好
+        window.addEventListener('load', () => {
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            changeLanguage(savedLang);
+            languageButton.textContent = savedLang.toUpperCase();
+        });
+
+        // 复制到剪贴板功能
+        const copyButton = document.querySelector('.copy-button');
+        copyButton.addEventListener('click', () => {
+            const outputContent = document.querySelector('.output-content').innerText;
+            navigator.clipboard.writeText(outputContent).then(() => {
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
