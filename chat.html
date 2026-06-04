@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator - Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0b10 0%, #12151f 100%);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(102,252,241,0.15);
+        }
+        .nav-links a {
+            color: #b0b3b8;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        .nav-links a:hover {
+            color: #66fcf1;
+        }
+        .credit-display {
+            color: #66fcf1;
+            font-weight: bold;
+            background: rgba(102,252,241,0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .chat-container {
+            background: rgba(31,40,51,0.9);
+            border-radius: 20px;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        .message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+        .user-message {
+            background: #3b82f6;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            padding: 10px 16px;
+            margin-left: auto;
+        }
+        .ai-message {
+            background: rgba(102,252,241,0.1);
+            border: 1px solid rgba(102,252,241,0.2);
+            color: #e5e7eb;
+            border-radius: 18px 18px 18px 4px;
+            padding: 10px 16px;
+            margin-right: auto;
+        }
+        .message-time {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .ai-message .message-time {
+            text-align: left;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(102,252,241,0.1);
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(102,252,241,0.2);
+            background: rgba(47,57,65,0.8);
+            color: white;
+        }
+        .chat-input button {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(90deg,#aaff80,#66fcf1);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .model-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .model-btn {
+            background: rgba(47,57,65,0.8);
+            border: 1px solid rgba(102,252,241,0.2);
+            color: #e5e7eb;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .model-btn.active {
+            background: rgba(102,252,241,0.2);
+            border-color: #66fcf1;
+            color: #66fcf1;
+        }
+        .suggested-prompts {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .suggested-btn {
+            background: rgba(47,57,65,0.8);
+            border: 1px solid rgba(102,252,241,0.2);
+            color: #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .suggested-btn:hover {
+            background: rgba(102,252,241,0.1);
+        }
+        footer {
+            border-top: 1px solid rgba(102,252,241,0.15);
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 2rem;
+        }
+        footer a {
+            color: #888;
+            margin: 0 0.5rem;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #66fcf1;
+        }
+        .back-btn {
+            color: #66fcf1;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        .error-msg {
+            color: #ef4444;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(239,68,68,0.1);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102,252,241,.3);
+            border-radius: 50%;
+            border-top-color: #66fcf1;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @media (max-width: 900px) {
+            .chat-container {
+                height: 70vh;
+            }
+            .chat-input {
+                flex-direction: column;
+            }
+            .chat-input button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <nav>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <div class="credit-display" id="creditDisplay">Credits: <span id="creditCount">0</span></div>
+        </nav>
+
+        <div id="errorContainer" class="error-msg" style="display: none;">
+            No credits found. Please go back and validate your code.
+        </div>
+
+        <div id="chatInterface" style="display: none;">
+            <div class="model-selector">
+                <button class="model-btn active" data-model="text">Text Generation</button>
+                <button class="model-btn" data-model="image">Image Generation</button>
+                <button class="model-btn" data-model="video">Video Generation</button>
+            </div>
+
+            <div class="suggested-prompts">
+                <button class="suggested-btn" data-prompt="Write a professional email">Write a professional email</button>
+                <button class="suggested-btn" data-prompt="Create a Facebook ad">Create a Facebook ad</button>
+                <button class="suggested-btn" data-prompt="Generate a product description">Generate a product description</button>
+                <button class="suggested-btn" data-prompt="Write a YouTube video script">Write a YouTube video script</button>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div>Hello! I'm your GPT-4 level AI assistant. What would you like to create today?</div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="userInput" placeholder="Type your request here..." autocomplete="off">
+                    <button id="sendBtn">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div>
+                <a href="#">About Us</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Refund Policy</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <div style="margin:1rem 0;">
+                Contact Us: <strong>shangyunbai2026@outlook.com</strong>
+            </div>
+            <div>© 2026 AI Creator Pro. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <script>
+        // 检查额度
+        let credits = parseInt(localStorage.getItem("ai_credits")) || 0;
+        const creditCountEl = document.getElementById("creditCount");
+        const errorContainer = document.getElementById("errorContainer");
+        const chatInterface = document.getElementById("chatInterface");
+        const chatMessages = document.getElementById("chatMessages");
+        const userInput = document.getElementById("userInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const modelBtns = document.querySelectorAll(".model-btn");
+        let currentModel = "text";
+
+        // 初始化页面
+        if (credits > 0) {
+            creditCountEl.textContent = credits;
+            chatInterface.style.display = "block";
+        } else {
+            errorContainer.style.display = "block";
+        }
+
+        // 模型切换
+        modelBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                modelBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentModel = btn.dataset.model;
+            });
+        });
+
+        // 推荐提示词点击
+        document.querySelectorAll(".suggested-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                userInput.value = btn.dataset.prompt;
+                userInput.focus();
+            });
+        });
+
+        // 发送消息
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message || credits <= 0) return;
+
+            // 显示用户消息
+            appendMessage("user", message);
+            userInput.value = "";
+            credits--;
+            creditCountEl.textContent = credits;
+            localStorage.setItem("ai_credits", credits);
+
+            // 显示加载状态
+            appendMessage("ai", '<span class="loading"></span> Generating response...', true);
+
+            // 模拟AI响应（实际项目中这里应该调用API）
+            setTimeout(() => {
+                // 移除加载消息
+                const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
+                if (loadingMsg) chatMessages.removeChild(loadingMsg);
+
+                // 生成不同类型的响应
+                let aiResponse = "";
+                if (currentModel === "text") {
+                    aiResponse = `Here's your text response for: "${message}"\n\nThis is a sample text generation result. In a real implementation, this would be replaced with actual AI-generated content using your API.`;
+                } else if (currentModel === "image") {
+                    aiResponse = `Image generation request: "${message}"\n\n[Sample image placeholder]\nIn production, this would display a generated image.`;
+                } else if (currentModel === "video") {
+                    aiResponse = `Video generation request: "${message}"\n\n[Sample video placeholder]\nIn production, this would display a generated video.`;
+                }
+
+                appendMessage("ai", aiResponse);
+            }, 2000);
+        }
+
+        // 添加消息到聊天窗口
+        function appendMessage(sender, content, isLoading = false) {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = `message ${sender}-message`;
+            
+            const contentDiv = document.createElement("div");
+            contentDiv.innerHTML = content;
+            messageDiv.appendChild(contentDiv);
+            
+            if (!isLoading) {
+                const timeDiv = document.createElement("div");
+                timeDiv.className = "message-time";
+                timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                messageDiv.appendChild(timeDiv);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 事件监听
+        sendBtn.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
