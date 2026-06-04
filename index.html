@@ -35,7 +35,6 @@
         .nav-links a:hover {
             color: #66fcf1;
         }
-        /* 语言切换（极简可靠版） */
         .lang-wrap {
             position: relative;
         }
@@ -168,7 +167,6 @@
         footer a:hover {
             color: #66fcf1;
         }
-        /* 新增：底部双列政策样式（完全匹配原有风格） */
         .footer-policies {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -245,7 +243,6 @@
                 <button class="code-btn" id="codeBtn" data-i18n="code_validate">Validate</button>
             </div>
             <div id="codeMsg"></div>
-            <!-- 仅修改此处的 href 为 template-hub.html -->
             <a href="template-hub.html" class="enter-chat" id="enterChatBtn" data-i18n="enter_chat">Enter Chat</a>
         </section>
 
@@ -332,7 +329,6 @@
                 <a href="#faq" data-i18n="footer_faq">FAQ</a>
             </div>
 
-            <!-- 新增：完整双列隐私政策+退款政策 -->
             <div class="footer-policies">
                 <div class="policy-section">
                     <h3 data-i18n="privacy_title">Privacy Policy</h3>
@@ -572,19 +568,16 @@
 
         let currentLang = "en";
 
-        // 语言按钮点击（最简单的toggle）
         const langBtn = document.getElementById("langBtn");
         const langMenu = document.getElementById("langMenu");
         langBtn.addEventListener("click", function(e){
             e.stopPropagation();
             langMenu.classList.toggle("show");
         });
-        // 点击页面其他地方关闭
         document.addEventListener("click", function(){
             langMenu.classList.remove("show");
         });
 
-        // 选择语言
         document.querySelectorAll(".lang-menu div").forEach(item=>{
             item.addEventListener("click", function(){
                 const lang = this.getAttribute("data-lang");
@@ -595,7 +588,6 @@
             });
         });
 
-        // 应用翻译
         function applyLang(lang){
             const t = translations[lang];
             document.querySelectorAll("[data-i18n]").forEach(el=>{
@@ -608,14 +600,13 @@
             });
         }
 
-        // FAQ展开/收起
         function toggleFaq(el){
             const ans = el.nextElementSibling;
             ans.classList.toggle("show");
             el.querySelector("span:last-child").innerText = ans.classList.contains("show") ? "-" : "+";
         }
 
-        // 简单卡密验证
+        // 🔥 修复完成：卡密验证 + 自动跳转chat.html
         const validCodes = {
             "DEMO-0000-0000":3,
             "ABC-1234-5678":30,
@@ -632,8 +623,9 @@
                 const credits = validCodes[code];
                 codeMsg.innerHTML = translations[currentLang].code_valid.replace("{credits}", credits);
                 codeMsg.style.color = "#22c55e";
-                enterChatBtn.style.display = "inline-block";
                 localStorage.setItem("ai_credits", credits);
+                // 验证成功自动跳转聊天页
+                window.location.href = "/chat.html";
             } else {
                 codeMsg.innerHTML = translations[currentLang].code_invalid;
                 codeMsg.style.color = "#ef4444";
@@ -641,7 +633,6 @@
             }
         });
 
-        // 初始化英文
         applyLang("en");
     </script>
 </body>
