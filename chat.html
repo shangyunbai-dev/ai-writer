@@ -237,10 +237,10 @@
             </div>
 
             <div class="suggested-prompts">
-                <button class="suggested-btn" onclick="fillEmailExample()">Write a professional email</button>
-                <button class="suggested-btn" onclick="fillFbAdExample()">Create a Facebook ad</button>
-                <button class="suggested-btn" onclick="fillAmazonExample()">Generate a product description</button>
-                <button class="suggested-btn" onclick="fillYoutubeExample()">Write a YouTube video script</button>
+                <button class="suggested-btn" onclick="fillEmailExample()">Write a professional email (Partner|Product|Scene)</button>
+<button class="suggested-btn" onclick="fillFbAdExample()">Create a Facebook ad (Product|Feature|Audience)</button>
+<button class="suggested-btn" onclick="fillAmazonExample()">Generate a product description (Name|Spec|Usage)</button>
+<button class="suggested-btn" onclick="fillYoutubeExample()">Write a YouTube video script (Product|Feature|Scene)</button>
             </div>
 
             <div class="chat-container">
@@ -359,20 +359,37 @@
         // 邮件示例
         // ========== 一键填充示例函数（优化核心） ==========
 // 邮件示例
+// 邮件
 function fillEmailExample() {
-  userInput.value = 'You are an experienced foreign trade salesman specializing in B2B business email writing.\nAccording to the user’s input content, write a complete business email including: Clear subject, standard greeting, concise body, polite ending.\nFormal, friendly, concise for international business.\n\nUser content: Business Inquiry | Order wireless earbuds | Ask for bulk price and delivery time';
+  let inputInfo = prompt('Email：格式 合作方|产品|使用场景\n示例：海外采购商|无线蓝牙耳机|外贸批发');
+  if(!inputInfo) return;
+  // 后台隐藏完整prompt
+  let basePrompt = 'You are an experienced foreign trade salesman specializing in B2B business email writing.\nAccording to the user’s input content, write a complete business email including: Clear subject, standard greeting, concise body, polite ending.\nFormal, friendly, concise for international business.\n\nUser content: ';
+  userInput.value = basePrompt + inputInfo;
   userInput.focus();
 }
+// FB广告
 function fillFbAdExample() {
-  userInput.value = 'You are a professional Facebook e-commerce copywriter.\nWrite a short FB ad with: Eye-catching headline, selling copy, clear CTA purchase guide.\nCasual, suitable for FB feed, no jargon.\n\nUser content: Wireless Earbuds | Bluetooth 5.3, 30h battery | Limited 50% off for sports lovers';
+  let inputInfo = prompt('Facebook Ad：格式 产品|核心卖点|目标人群\n示例：无线耳机|蓝牙5.3续航30h|户外运动爱好者');
+  if(!inputInfo) return;
+  let basePrompt = 'You are a professional Facebook e-commerce copywriter.\nWrite a short FB ad with: Eye-catching headline, selling copy, clear CTA purchase guide.\nCasual, suitable for FB feed, no jargon.\n\nUser content: ';
+  userInput.value = basePrompt + inputInfo;
   userInput.focus();
 }
+// 亚马逊Listing
 function fillAmazonExample() {
-  userInput.value = 'You are a senior US Amazon listing copywriter.\nCreate a standard listing:\n1. SEO title (max 200 chars)\n2. 5 bullet points (bold start, customer benefits)\n3. NO exaggerated words (best/top/premium)\n4. American English style\n\nUser content: Stainless Steel Water Bottle | 500ml, insulated, BPA free | For gym, travel, outdoor';
+  let inputInfo = prompt('Amazon Listing：格式 产品|参数材质|使用场景\n示例：不锈钢保温杯|500ml食品级304|通勤健身旅行');
+  if(!inputInfo) return;
+  let basePrompt = 'You are a senior US Amazon listing copywriter.\nCreate a standard listing:\n1. SEO title (max 200 chars)\n2. 5 bullet points (bold start, customer benefits)\n3. NO exaggerated words (best/top/premium)\n4. American English style\n\nUser content: ';
+  userInput.value = basePrompt + inputInfo;
   userInput.focus();
 }
+// Youtube脚本
 function fillYoutubeExample() {
-  userInput.value = 'You are a professional YouTube short video script writer for Amazon affiliate.\nWrite a complete unboxing script: Opening hook → Unbox & features → Pros & cons → Purchase guide.\nSuitable for short video shooting.\n\nUser content: Wireless Earbuds | Unboxing review | 3-minute short video for Amazon affiliate';
+  let inputInfo = prompt('Youtube Script：格式 产品|功能特点|适用场景\n示例：智能手表|心率监测防水|日常佩戴送礼');
+  if(!inputInfo) return;
+  let basePrompt = 'You are a professional YouTube short video script writer for Amazon affiliate.\nWrite a complete unboxing script: Opening hook → Unbox & features → Pros & cons → Purchase guide.\nSuitable for short video shooting.\n\nUser content: ';
+  userInput.value = basePrompt + inputInfo;
   userInput.focus();
 }
         // 事件监听
