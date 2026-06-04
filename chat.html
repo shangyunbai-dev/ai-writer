@@ -357,26 +357,24 @@
 
         // ========== 一键填充示例函数（优化核心） ==========
         // 邮件示例
-        function fillEmailExample() {
-            userInput.value = "Business Inquiry | Order wireless earbuds | Ask for bulk price and delivery time";
-            userInput.focus();
-        }
-        // FB广告示例
-        function fillFbAdExample() {
-            userInput.value = "Wireless Earbuds | Bluetooth 5.3, 30h battery | Limited 50% off for sports lovers";
-            userInput.focus();
-        }
-        // 亚马逊产品描述示例
-        function fillAmazonExample() {
-            userInput.value = "Stainless Steel Water Bottle | 500ml, insulated, BPA free | For gym, travel, outdoor";
-            userInput.focus();
-        }
-        // YouTube脚本示例
-        function fillYoutubeExample() {
-            userInput.value = "Wireless Earbuds | Unboxing review | 3-minute short video for Amazon affiliate";
-            userInput.focus();
-        }
-
+        // ========== 一键填充示例函数（优化核心） ==========
+// 邮件示例
+function fillEmailExample() {
+  userInput.value = 'You are an experienced foreign trade salesman specializing in B2B business email writing.\nAccording to the user’s input content, write a complete business email including: Clear subject, standard greeting, concise body, polite ending.\nFormal, friendly, concise for international business.\n\nUser content: Business Inquiry | Order wireless earbuds | Ask for bulk price and delivery time';
+  userInput.focus();
+}
+function fillFbAdExample() {
+  userInput.value = 'You are a professional Facebook e-commerce copywriter.\nWrite a short FB ad with: Eye-catching headline, selling copy, clear CTA purchase guide.\nCasual, suitable for FB feed, no jargon.\n\nUser content: Wireless Earbuds | Bluetooth 5.3, 30h battery | Limited 50% off for sports lovers';
+  userInput.focus();
+}
+function fillAmazonExample() {
+  userInput.value = 'You are a senior US Amazon listing copywriter.\nCreate a standard listing:\n1. SEO title (max 200 chars)\n2. 5 bullet points (bold start, customer benefits)\n3. NO exaggerated words (best/top/premium)\n4. American English style\n\nUser content: Stainless Steel Water Bottle | 500ml, insulated, BPA free | For gym, travel, outdoor';
+  userInput.focus();
+}
+function fillYoutubeExample() {
+  userInput.value = 'You are a professional YouTube short video script writer for Amazon affiliate.\nWrite a complete unboxing script: Opening hook → Unbox & features → Pros & cons → Purchase guide.\nSuitable for short video shooting.\n\nUser content: Wireless Earbuds | Unboxing review | 3-minute short video for Amazon affiliate';
+  userInput.focus();
+}
         // 事件监听
         sendBtn.addEventListener("click", sendMessage);
         userInput.addEventListener("keypress", (e) => {
