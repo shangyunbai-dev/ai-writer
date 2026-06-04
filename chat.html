@@ -237,10 +237,10 @@
             </div>
 
             <div class="suggested-prompts">
-                <button class="suggested-btn" data-prompt="Write a professional email">Write a professional email</button>
-                <button class="suggested-btn" data-prompt="Create a Facebook ad">Create a Facebook ad</button>
-                <button class="suggested-btn" data-prompt="Generate a product description">Generate a product description</button>
-                <button class="suggested-btn" data-prompt="Write a YouTube video script">Write a YouTube video script</button>
+                <button class="suggested-btn" onclick="fillEmailExample()">Write a professional email</button>
+                <button class="suggested-btn" onclick="fillFbAdExample()">Create a Facebook ad</button>
+                <button class="suggested-btn" onclick="fillAmazonExample()">Generate a product description</button>
+                <button class="suggested-btn" onclick="fillYoutubeExample()">Write a YouTube video script</button>
             </div>
 
             <div class="chat-container">
@@ -251,7 +251,7 @@
                     </div>
                 </div>
                 <div class="chat-input">
-                    <input type="text" id="userInput" placeholder="Type your request here..." autocomplete="off">
+                    <input type="text" id="userInput" placeholder="Example: Product/Scene | Key Info | Purpose" autocomplete="off">
                     <button id="sendBtn">Send</button>
                 </div>
             </div>
@@ -297,14 +297,6 @@
                 modelBtns.forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 currentModel = btn.dataset.model;
-            });
-        });
-
-        // 推荐提示词点击
-        document.querySelectorAll(".suggested-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                userInput.value = btn.dataset.prompt;
-                userInput.focus();
             });
         });
 
@@ -361,6 +353,28 @@
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ========== 一键填充示例函数（优化核心） ==========
+        // 邮件示例
+        function fillEmailExample() {
+            userInput.value = "Business Inquiry | Order wireless earbuds | Ask for bulk price and delivery time";
+            userInput.focus();
+        }
+        // FB广告示例
+        function fillFbAdExample() {
+            userInput.value = "Wireless Earbuds | Bluetooth 5.3, 30h battery | Limited 50% off for sports lovers";
+            userInput.focus();
+        }
+        // 亚马逊产品描述示例
+        function fillAmazonExample() {
+            userInput.value = "Stainless Steel Water Bottle | 500ml, insulated, BPA free | For gym, travel, outdoor";
+            userInput.focus();
+        }
+        // YouTube脚本示例
+        function fillYoutubeExample() {
+            userInput.value = "Wireless Earbuds | Unboxing review | 3-minute short video for Amazon affiliate";
+            userInput.focus();
         }
 
         // 事件监听
