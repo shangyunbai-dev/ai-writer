@@ -361,16 +361,15 @@
 // 邮件示例
 // 邮件
 function fillEmailExample() {
-  let inputInfo = prompt('Email：格式 合作方|产品|使用场景\n示例：海外采购商|无线蓝牙耳机|外贸批发');
+  let inputInfo = prompt('Email Format: Partner|Product|Usage Scene\nExample: Overseas Buyer|Wireless Earbuds|Bulk Wholesale');
   if(!inputInfo) return;
-  // 后台隐藏完整prompt
   let basePrompt = 'You are an experienced foreign trade salesman specializing in B2B business email writing.\nAccording to the user’s input content, write a complete business email including: Clear subject, standard greeting, concise body, polite ending.\nFormal, friendly, concise for international business.\n\nUser content: ';
   userInput.value = basePrompt + inputInfo;
   userInput.focus();
 }
 // FB广告
 function fillFbAdExample() {
-  let inputInfo = prompt('Facebook Ad：格式 产品|核心卖点|目标人群\n示例：无线耳机|蓝牙5.3续航30h|户外运动爱好者');
+  let inputInfo = prompt('Facebook Ad Format: Product|Core Feature|Target Audience\nExample: Wireless Earbuds|Bluetooth5.3 30h Battery|Sports Lovers');
   if(!inputInfo) return;
   let basePrompt = 'You are a professional Facebook e-commerce copywriter.\nWrite a short FB ad with: Eye-catching headline, selling copy, clear CTA purchase guide.\nCasual, suitable for FB feed, no jargon.\n\nUser content: ';
   userInput.value = basePrompt + inputInfo;
@@ -378,7 +377,7 @@ function fillFbAdExample() {
 }
 // 亚马逊Listing
 function fillAmazonExample() {
-  let inputInfo = prompt('Amazon Listing：格式 产品|参数材质|使用场景\n示例：不锈钢保温杯|500ml食品级304|通勤健身旅行');
+  let inputInfo = prompt('Amazon Listing Format: Product|Spec|Usage\nExample: Stainless Water Bottle|500ml Food-grade 304|Gym & Travel');
   if(!inputInfo) return;
   let basePrompt = 'You are a senior US Amazon listing copywriter.\nCreate a standard listing:\n1. SEO title (max 200 chars)\n2. 5 bullet points (bold start, customer benefits)\n3. NO exaggerated words (best/top/premium)\n4. American English style\n\nUser content: ';
   userInput.value = basePrompt + inputInfo;
@@ -386,7 +385,7 @@ function fillAmazonExample() {
 }
 // Youtube脚本
 function fillYoutubeExample() {
-  let inputInfo = prompt('Youtube Script：格式 产品|功能特点|适用场景\n示例：智能手表|心率监测防水|日常佩戴送礼');
+  let inputInfo = prompt('Youtube Script Format: Product|Features|Usage\nExample: Smart Watch|Heart Rate Waterproof|Daily Wear & Gift');
   if(!inputInfo) return;
   let basePrompt = 'You are a professional YouTube short video script writer for Amazon affiliate.\nWrite a complete unboxing script: Opening hook → Unbox & features → Pros & cons → Purchase guide.\nSuitable for short video shooting.\n\nUser content: ';
   userInput.value = basePrompt + inputInfo;
