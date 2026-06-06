@@ -322,18 +322,27 @@
                 if (loadingMsg) chatMessages.removeChild(loadingMsg);
 
                 // 生成不同类型的响应
-                let aiResponse = "";
-                if (currentModel === "text") {
-                    aiResponse = `Here's your text response for: "${message}"\n\nThis is a sample text generation result. In a real implementation, this would be replaced with actual AI-generated content using your API.`;
-                } else if (currentModel === "image") {
-                    aiResponse = `Image generation request: "${message}"\n\n[Sample image placeholder]\nIn production, this would display a generated image.`;
-                } else if (currentModel === "video") {
-                    aiResponse = `Video generation request: "${message}"\n\n[Sample video placeholder]\nIn production, this would display a generated video.`;
-                }
-
-                appendMessage("ai", aiResponse);
-            }, 2000);
-        }
+              const API_URL = "https://ai-api-proxy.shangyunbai-vercel.workers.dev";
+fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        model: "qwen-turbo",
+        input: { messages: [{ role: "user", content: message }] },
+        parameters: { max_tokens: 1024 }
+    })
+})
+.then(res => res.json())
+.then(data => {
+    const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
+    if (loadingMsg) loadingMsg.remove();
+    appendMessage("ai", data.output?.text || "Generate failed");
+})
+.catch(() => {
+    const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
+    if (loadingMsg) loadingMsg.remove();
+    appendMessage("ai", "Request error");
+});
 
         // 添加消息到聊天窗口
         function appendMessage(sender, content, isLoading = false) {
