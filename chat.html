@@ -301,49 +301,45 @@
         });
 
         // 发送消息
-        function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message || credits <= 0) return;
+       async function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message || credits <= 0) return;
 
-            // 显示用户消息
-            appendMessage("user", message);
-            userInput.value = "";
-            credits--;
-            creditCountEl.textContent = credits;
-            localStorage.setItem("ai_credits", credits);
+    // 显示用户消息并更新额度
+    appendMessage("user", message);
+    userInput.value = "";
+    credits--;
+    creditCountEl.textContent = credits;
+    localStorage.setItem("ai_credits", credits);
 
-            // 显示加载状态
-            appendMessage("ai", '<span class="loading"></span> Generating response...', true);
+    // 显示加载状态
+    appendMessage("ai", '<span class="loading"></span> Generating response...', true);
 
-            // 模拟AI响应（实际项目中这里应该调用API）
-            setTimeout(() => {
-                // 移除加载消息
-                const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
-                if (loadingMsg) chatMessages.removeChild(loadingMsg);
-
-                // 生成不同类型的响应
-              const API_URL = "https://ai-api-proxy.shangyunbai-vercel.workers.dev";
-fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        model: "qwen-turbo",
-        input: { messages: [{ role: "user", content: message }] },
-        parameters: { max_tokens: 1024 }
+    // 调用API获取AI响应
+    const API_URL = "https://ai-api-proxy.shangyunbai-vercel.workers.dev";
+    fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "qwen-turbo",
+            input: { messages: [{ role: "user", content: message }] },
+            parameters: { max_tokens: 1024 }
+        })
     })
-})
-.then(res => res.json())
-.then(data => {
-    const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
-    if (loadingMsg) loadingMsg.remove();
-    appendMessage("ai", data.output?.text || "Generate failed");
-})
-.catch(() => {
-    const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
-    if (loadingMsg) loadingMsg.remove();
-    appendMessage("ai", "Request error");
-});
-
+    .then(res => res.json())
+    .then(data => {
+        // 移除加载消息并显示结果
+        const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
+        if (loadingMsg) loadingMsg.remove();
+        appendMessage("ai", data.output?.text || "Generate failed");
+    })
+    .catch(() => {
+        // 处理请求错误
+        const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
+        if (loadingMsg) loadingMsg.remove();
+        appendMessage("ai", "Request error");
+    });
+}
         // 添加消息到聊天窗口
         function appendMessage(sender, content, isLoading = false) {
             const messageDiv = document.createElement("div");
