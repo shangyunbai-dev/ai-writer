@@ -606,32 +606,49 @@
             el.querySelector("span:last-child").innerText = ans.classList.contains("show") ? "-" : "+";
         }
 
-        // 原来的硬编码验证逻辑
-        const validCodes = {
-            "DEMO-0000-0000":3,
-            "ABC-1234-5678":30,
-            "XYZ-9999-8888":10
-        };
-        const codeBtn = document.getElementById("codeBtn");
-        const codeInput = document.getElementById("codeInput");
-        const codeMsg = document.getElementById("codeMsg");
-        const enterChatBtn = document.getElementById("enterChatBtn");
+       // 替换为调用Worker接口验证兑换码
+const codeBtn = document.getElementById("codeBtn");
+const codeInput = document.getElementById("codeInput");
+const codeMsg = document.getElementById("codeMsg");
+const enterChatBtn = document.getElementById("enterChatBtn");
 
-        codeBtn.addEventListener("click", function(){
-            const code = codeInput.value.trim();
-            if(validCodes[code]){
-                const credits = validCodes[code];
-                codeMsg.innerHTML = translations[currentLang].code_valid.replace("{credits}", credits);
-                codeMsg.style.color = "#22c55e";
-                localStorage.setItem("ai_credits", credits);
-                // 验证成功自动跳转聊天页
-                window.location.href = "/chat.html";
-            } else {
-                codeMsg.innerHTML = translations[currentLang].code_invalid;
-                codeMsg.style.color = "#ef4444";
-                enterChatBtn.style.display = "none";
-            }
+codeBtn.addEventListener("click", async function(){
+    const code = codeInput.value.trim();
+    if (!code) {
+        codeMsg.innerHTML = translations[currentLang].code_invalid;
+        codeMsg.style.color = "#ef4444";
+        enterChatBtn.style.display = "none";
+        return;
+    }
+
+    try {
+        const res = await fetch("https://cold-fire-5648.shangyunbai-vercel.workers.dev/redeem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: code })
         });
+        const data = await res.json();
+
+        if (data.success) {
+            codeMsg.innerHTML = translations[currentLang].code_valid.replace("{credits}", data.remainingUses);
+            codeMsg.style.color = "#22c55e";
+            localStorage.setItem("ai_credits", data.remainingUses);
+            enterChatBtn.style.display = "inline-block";
+            // 验证成功自动跳转聊天页
+            setTimeout(() => {
+                window.location.href = "/chat.html";
+            }, 1500);
+        } else {
+            codeMsg.innerHTML = translations[currentLang].code_invalid;
+            codeMsg.style.color = "#ef4444";
+            enterChatBtn.style.display = "none";
+        }
+    } catch (err) {
+        codeMsg.innerHTML = "Network error, please try again";
+        codeMsg.style.color = "#ef4444";
+        enterChatBtn.style.display = "none";
+    }
+});
 
         applyLang("en");
     </script>
