@@ -352,15 +352,28 @@
           });
         });
 
-        // 发送消息（已集成：本地脱敏 + 图片生成）
+        // 发送消息（已集成：本地脱敏 + 自动西方审美prompt增强 + 图片生成）
         async function sendMessage() {
           let rawMessage = userInput.value.trim();
           if (!rawMessage || credits <= 0) return;
 
-          // ========== 本地第一步：敏感信息脱敏（明文不出浏览器） ==========
-          const safeMessage = desensitizeText(rawMessage);
+          // ========== 自动西方审美Prompt增强（用户完全无感知） ==========
+          let enhancedPrompt = rawMessage;
+          
+          if (currentModel === "image") {
+            // 图片生成专属增强词（欧美商业摄影+高画质+电影感）
+            const imageEnhancers = ", western commercial aesthetic, photorealistic, cinematic lighting, high detail, 8k, sharp focus, professional photography, vibrant natural colors, balanced composition";
+            enhancedPrompt = rawMessage + imageEnhancers;
+          } else if (currentModel === "text") {
+            // 文本生成专属增强词（地道美式英语+口语化+海外市场风格）
+            const textEnhancers = ". Respond in natural, colloquial American English. Use a friendly, professional tone suitable for Western audiences. Avoid literal translations and Chinese-style expressions. Keep sentences concise and engaging.";
+            enhancedPrompt = rawMessage + textEnhancers;
+          }
 
-          // 展示【用户原始输入】（仅本地展示，上传用脱敏内容）
+          // ========== 本地第一步：敏感信息脱敏（明文不出浏览器） ==========
+          const safeMessage = desensitizeText(enhancedPrompt);
+
+          // 展示【用户原始输入】（只显示用户输入的内容，不显示增强词）
           appendMessage("user", rawMessage);
           userInput.value = "";
 
