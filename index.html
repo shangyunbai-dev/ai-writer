@@ -1,13 +1,10 @@
 <script>
-// ======================================
-// 🔥 新增：URL参数自动生成兑换码（加在最开头）
-// ======================================
+// URL parameter auto generate redeem code
 window.addEventListener("load", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const orderId = urlParams.get("order_id");
   
   if (orderId) {
-    // 自动用URL里的order_id调用Worker生成兑换码
     fetch("https://cold-fire-5648.shangyunbai-vercel.workers.dev/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -16,22 +13,18 @@ window.addEventListener("load", function() {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        // 自动填充兑换码到输入框
         document.getElementById("codeInput").value = data.code;
-        alert("✅ Your redeem code has been generated automatically! Just click 'Validate' to unlock your credits.");
+        alert("Your redeem code has been generated automatically! Just click 'Validate' to unlock your credits.");
       }
     });
   }
 });
 
-// ======================================
-// 下面是你原来的代码，除了【卡密验证部分】，其他完全不动
-// ======================================
 const translations = {
     en: {
         nav_home:"Home",nav_price:"Pricing",nav_faq:"FAQ",
-       hero_title:"QUIT MONTHLY AI FEES! GPT-GRADE AI ONLY $9.9 ONE-TIME",
-       hero_subtitle:"Never Expire Credits + Built-In Mass Ready-to-Use Professional Prompts | Write·Draw·Translate All-In-One",
+        hero_title:"QUIT MONTHLY AI FEES! GPT-GRADE AI ONLY $9.9 ONE-TIME",
+        hero_subtitle:"Never Expire Credits + Built-In Mass Ready-to-Use Professional Prompts | Write·Draw·Translate All-In-One",
         price_title:"Get Started Today",
         price_desc:"= 30 Credits (1 Credit = 1 AI Request)",
         buy_btn:"BUY NOW - $9.9",
@@ -285,9 +278,7 @@ function toggleFaq(el){
     el.querySelector("span:last-child").innerText = ans.classList.contains("show") ? "-" : "+";
 }
 
-// ======================================
-// 🔥 修改点2：替换原来的硬编码验证逻辑，改为调用Worker /redeem接口
-// ======================================
+// Redeem code validation logic
 const codeBtn = document.getElementById("codeBtn");
 const codeInput = document.getElementById("codeInput");
 const codeMsg = document.getElementById("codeMsg");
@@ -303,7 +294,6 @@ codeBtn.addEventListener("click", async function(){
     }
 
     try {
-        // 调用Worker的/redeem接口验证兑换码
         const res = await fetch("https://cold-fire-5648.shangyunbai-vercel.workers.dev/redeem", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -312,12 +302,10 @@ codeBtn.addEventListener("click", async function(){
         const data = await res.json();
 
         if (data.success) {
-            // 验证成功，显示剩余额度并跳转
             codeMsg.innerHTML = translations[currentLang].code_valid.replace("{credits}", data.remainingUses);
             codeMsg.style.color = "#22c55e";
             localStorage.setItem("ai_credits", data.remainingUses);
             enterChatBtn.style.display = "inline-block";
-            // 自动跳转到聊天页面
             setTimeout(() => {
                 window.location.href = "/chat.html";
             }, 1500);
