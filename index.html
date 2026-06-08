@@ -348,6 +348,26 @@
     </div>
 
     <script>
+        // 🔥 全自动生成兑换码（客户点击邮件链接自动填入）
+window.addEventListener("load", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get("order_id");
+  if (!orderId) return;
+
+  fetch("https://cold-fire-5648.shangyunbai-vercel.workers.dev/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order_id: orderId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.code) {
+      // 你的输入框ID是codeInput，完全匹配，直接自动填入
+      document.getElementById("codeInput").value = data.code;
+      alert("✅ Redeem code generated automatically! Click Validate to unlock.");
+    }
+  });
+});
         const translations = {
             en: {
                 nav_home:"Home",nav_price:"Pricing",nav_faq:"FAQ",
