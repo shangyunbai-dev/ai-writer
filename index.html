@@ -1,5 +1,7 @@
 <script>
-// URL parameter auto generate redeem code
+// ======================================
+// 🔥 只加这一段：URL参数自动生成兑换码（其他所有代码不动）
+// ======================================
 window.addEventListener("load", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const orderId = urlParams.get("order_id");
@@ -20,11 +22,14 @@ window.addEventListener("load", function() {
   }
 });
 
+// ======================================
+// 下面是你原来的代码，从这里开始到【验证逻辑】之前，**完全没有修改**
+// ======================================
 const translations = {
     en: {
         nav_home:"Home",nav_price:"Pricing",nav_faq:"FAQ",
-        hero_title:"QUIT MONTHLY AI FEES! GPT-GRADE AI ONLY $9.9 ONE-TIME",
-        hero_subtitle:"Never Expire Credits + Built-In Mass Ready-to-Use Professional Prompts | Write·Draw·Translate All-In-One",
+       hero_title:"QUIT MONTHLY AI FEES! GPT-GRADE AI ONLY $9.9 ONE-TIME",
+       hero_subtitle:"Never Expire Credits + Built-In Mass Ready-to-Use Professional Prompts | Write·Draw·Translate All-In-One",
         price_title:"Get Started Today",
         price_desc:"= 30 Credits (1 Credit = 1 AI Request)",
         buy_btn:"BUY NOW - $9.9",
@@ -278,7 +283,9 @@ function toggleFaq(el){
     el.querySelector("span:last-child").innerText = ans.classList.contains("show") ? "-" : "+";
 }
 
-// Redeem code validation logic
+// ======================================
+// 🔥 只改这一段：把原来的硬编码验证逻辑，换成调用Worker接口
+// ======================================
 const codeBtn = document.getElementById("codeBtn");
 const codeInput = document.getElementById("codeInput");
 const codeMsg = document.getElementById("codeMsg");
