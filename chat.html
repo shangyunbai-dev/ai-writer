@@ -38,12 +38,31 @@
         .nav-links a:hover {
             color: #66fcf1;
         }
-        .credit-display {
+        .token-display {
             color: #66fcf1;
             font-weight: bold;
             background: rgba(102,252,241,0.1);
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            text-align: right;
+            line-height: 1.4;
+        }
+        .token-display.warning {
+            color: #f59e0b;
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+        .token-display.danger {
+            color: #ef4444;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+        }
+        .token-small {
+            font-size: 0.75rem;
+            font-weight: normal;
+            opacity: 0.8;
+            display: block;
         }
         .chat-container {
             background: rgba(31,40,51,0.9);
@@ -108,6 +127,10 @@
             background: rgba(47,57,65,0.8);
             color: white;
         }
+        .chat-input input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .chat-input button {
             padding: 1rem 1.5rem;
             border-radius: 12px;
@@ -117,6 +140,10 @@
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
+        }
+        .chat-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .model-selector {
             display: flex;
@@ -190,6 +217,15 @@
             border-radius: 12px;
             margin-bottom: 1rem;
         }
+        .warn-msg {
+            color: #f59e0b;
+            text-align: center;
+            padding: 0.8rem;
+            background: rgba(245,158,11,0.1);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
         .loading {
             display: inline-block;
             width: 20px;
@@ -227,11 +263,18 @@
                 <a href="index.html#pricing">Pricing</a>
                 <a href="index.html#faq">FAQ</a>
             </div>
-            <div class="credit-display" id="creditDisplay">Credits: <span id="creditCount">0</span></div>
+            <div class="token-display" id="tokenDisplay">
+                <span id="tokenCountText">Loading...</span>
+                <span class="token-small" id="expireText"></span>
+            </div>
         </nav>
 
         <div id="errorContainer" class="error-msg" style="display: none;">
-            No credits found. Please go back and validate your code.
+            No valid access found. Please go back and validate your code.
+        </div>
+
+        <div id="warnContainer" class="warn-msg" style="display: none;">
+            ⚠️ You have used 50%+ of your tokens. Speed is now throttled.
         </div>
 
         <div id="chatInterface" style="display: none;">
@@ -284,33 +327,33 @@
     </div>
 
     <script>
-        // 脱敏工具函数 - 前端本地执行（关键：明文不出浏览器）
+        // ========== 原有脱敏工具函数 完全保留 ==========
         function desensitizeText(text) {
           if (!text) return text;
           let res = text;
-
-          // 1. 国内手机号 11位：138****5678
           res = res.replace(/(1[3-9]\d)(\d{4})(\d{4})/g, '$1****$3');
-          // 2. 海外手机号（带+区号）：+123****8900
           res = res.replace(/(\+\d{1,4}\d{2,4})(\d{4,})(\d{4})/g, '$1****$3');
-          // 3. 邮箱：a***b@domain.com
           res = res.replace(/(\w)(\w+)(\w@[\w.-]+\.\w+)/g, '$1***$3');
-          // 4. 身份证 18位：110*********1234
           res = res.replace(/(\d{6})(\d{6})(\d{6})/g, '$1******$3');
-          // 5. 银行卡：6228****1234
           res = res.replace(/(\d{4})(\d{8,12})(\d{4})/g, '$1****$3');
-          // 6. QQ号：123****789
           res = res.replace(/(\d{3})(\d{4,})(\d{3})/g, '$1****$3');
-          // 7. 详细地址（省/市+街道/门牌号 精简脱敏）
           res = res.replace(/([省市县区].{2,10})(街道|路|巷|号|小区|单元|室).+/g, '$1 【详细地址已脱敏】');
-
           return res;
         }
 
-        // 检查额度
-        let credits = parseInt(localStorage.getItem("ai_credits")) || 0;
-        const creditCountEl = document.getElementById("creditCount");
+        // ========== Token 配额核心逻辑 ==========
+        const TOTAL_TOKENS = 1000000;
+        const THROTTLE_THRESHOLD = 500000; // 50万触发限速提示
+
+        let remainingTokens = parseInt(localStorage.getItem("ai_remaining_tokens")) || 0;
+        let expireAt = localStorage.getItem("ai_expire_at") || null;
+        const accessCode = localStorage.getItem("ai_access_code") || "";
+
+        const tokenDisplay = document.getElementById("tokenDisplay");
+        const tokenCountText = document.getElementById("tokenCountText");
+        const expireText = document.getElementById("expireText");
         const errorContainer = document.getElementById("errorContainer");
+        const warnContainer = document.getElementById("warnContainer");
         const chatInterface = document.getElementById("chatInterface");
         const chatMessages = document.getElementById("chatMessages");
         const userInput = document.getElementById("userInput");
@@ -320,22 +363,77 @@
         const imagePrompts = document.getElementById("imagePrompts");
         let currentModel = "text";
 
-        // 初始化页面
-        if (credits > 0) {
-          creditCountEl.textContent = credits;
-          chatInterface.style.display = "block";
-        } else {
-          errorContainer.style.display = "block";
+        // 更新顶部Token显示
+        function updateTokenDisplay() {
+            tokenCountText.textContent = `Tokens: ${remainingTokens.toLocaleString()}`;
+            if (expireAt) {
+                const expireDate = new Date(expireAt).toLocaleDateString();
+                expireText.textContent = `Expires: ${expireDate}`;
+            }
+
+            // 状态样式切换
+            tokenDisplay.classList.remove("warning", "danger");
+            if (remainingTokens <= 0) {
+                tokenDisplay.classList.add("danger");
+            } else if (remainingTokens <= THROTTLE_THRESHOLD) {
+                tokenDisplay.classList.add("warning");
+            }
         }
 
-        // 模型切换
+        // 检查Token阈值状态
+        function checkTokenStatus() {
+            // 过期检查
+            if (expireAt && new Date() > new Date(expireAt)) {
+                errorContainer.textContent = "Your access code has expired. Please purchase a new one.";
+                errorContainer.style.display = "block";
+                chatInterface.style.display = "none";
+                return false;
+            }
+
+            // 熔断检查
+            if (remainingTokens <= 0) {
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+                userInput.placeholder = "Tokens exhausted. Purchase a new code to continue.";
+                warnContainer.style.display = "none";
+                appendMessage("ai", "❌ Your monthly tokens have been fully used. Please purchase a new access code to continue.");
+                return false;
+            }
+
+            // 限速提示
+            if (remainingTokens <= THROTTLE_THRESHOLD) {
+                warnContainer.style.display = "block";
+            } else {
+                warnContainer.style.display = "none";
+            }
+
+            return true;
+        }
+
+        // 初始化页面
+        function initPage() {
+            if (!accessCode || remainingTokens <= 0) {
+                errorContainer.style.display = "block";
+                chatInterface.style.display = "none";
+                return;
+            }
+
+            updateTokenDisplay();
+            
+            if (checkTokenStatus()) {
+                chatInterface.style.display = "block";
+            }
+        }
+
+        initPage();
+
+        // ========== 原有模型切换逻辑 完全保留 ==========
         modelBtns.forEach(btn => {
           btn.addEventListener("click", () => {
             modelBtns.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             currentModel = btn.dataset.model;
             
-            // 切换提示词显示
             if (currentModel === "text") {
               textPrompts.style.display = "flex";
               imagePrompts.style.display = "none";
@@ -352,45 +450,40 @@
           });
         });
 
-        // 发送消息（已集成：本地脱敏 + 自动西方审美prompt增强 + 图片生成）
+        // ========== 发送消息：Token扣改版 ==========
         async function sendMessage() {
           let rawMessage = userInput.value.trim();
-          if (!rawMessage || credits <= 0) return;
+          if (!rawMessage || remainingTokens <= 0) return;
+          if (!checkTokenStatus()) return;
 
-          // ========== 自动西方审美Prompt增强（用户完全无感知） ==========
+          // ========== 原有自动西方审美Prompt增强 完全保留 ==========
           let enhancedPrompt = rawMessage;
           
           if (currentModel === "image") {
-            // 图片生成专属增强词（欧美商业摄影+高画质+电影感）
             const imageEnhancers = ", western commercial aesthetic, photorealistic, cinematic lighting, high detail, 8k, sharp focus, professional photography, vibrant natural colors, balanced composition";
             enhancedPrompt = rawMessage + imageEnhancers;
           } else if (currentModel === "text") {
-            // 文本生成专属增强词（地道美式英语+口语化+海外市场风格）
             const textEnhancers = ". Respond in natural, colloquial American English. Use a friendly, professional tone suitable for Western audiences. Avoid literal translations and Chinese-style expressions. Keep sentences concise and engaging.";
             enhancedPrompt = rawMessage + textEnhancers;
           }
 
-          // ========== 本地第一步：敏感信息脱敏（明文不出浏览器） ==========
+          // ========== 原有本地脱敏 完全保留 ==========
           const safeMessage = desensitizeText(enhancedPrompt);
 
-          // 展示【用户原始输入】（只显示用户输入的内容，不显示增强词）
+          // 展示用户原始输入
           appendMessage("user", rawMessage);
           userInput.value = "";
-
-          // 扣除额度
-          credits--;
-          creditCountEl.textContent = credits;
-          localStorage.setItem("ai_credits", credits);
 
           // 加载状态
           appendMessage("ai", '<span class="loading"></span> Generating response...', true);
 
-          // 调用API
           const API_URL = "https://ai-api-proxy.shangyunbai-vercel.workers.dev";
           
           try {
             if (currentModel === "image") {
-              // 图片生成请求
+              // 图片生成：固定扣除Token（可按需调整数值）
+              const IMAGE_TOKEN_COST = 50000;
+
               const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -400,14 +493,20 @@
                   parameters: {
                     size: "1024*1024",
                     n: 1
-                  }
+                  },
+                  code: accessCode // 传给后端做校验和记账
                 })
               });
 
               const data = await response.json();
               
               if (data.output && data.output.task_id) {
-                // 轮询图片结果（所有请求都通过Worker转发）
+                // 成功则扣除图片固定Token
+                remainingTokens = Math.max(0, remainingTokens - IMAGE_TOKEN_COST);
+                localStorage.setItem("ai_remaining_tokens", remainingTokens);
+                updateTokenDisplay();
+                checkTokenStatus();
+
                 await pollImageResult(data.output.task_id);
               } else {
                 throw new Error(data.error || "Image generation failed");
@@ -415,14 +514,15 @@
             } else if (currentModel === "video") {
               throw new Error("Video generation is coming soon!");
             } else {
-              // 文本生成请求（原逻辑完全保留）
+              // 文本生成：从响应中读取实际消耗Token
               const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   model: "qwen-turbo",
                   input: { messages: [{ role: "user", content: safeMessage }] },
-                  parameters: { max_tokens: 1024, result_format: "message" }
+                  parameters: { max_tokens: 1024, result_format: "message" },
+                  code: accessCode // 传给后端做校验和记账
                 })
               });
 
@@ -431,22 +531,31 @@
               
               if (data.output && data.output.choices && data.output.choices[0]) {
                 appendMessage("ai", data.output.choices[0].message.content);
+
+                // 扣减本次消耗的Token（后端需返回usage字段）
+                if (data.usage && data.usage.total_tokens) {
+                  const used = data.usage.total_tokens;
+                  remainingTokens = Math.max(0, remainingTokens - used);
+                  localStorage.setItem("ai_remaining_tokens", remainingTokens);
+                  updateTokenDisplay();
+                  checkTokenStatus();
+                }
               } else if (data.error) {
-                appendMessage("ai", `API错误: ${data.error}`);
+                appendMessage("ai", `API error: ${data.error}`);
               } else {
-                appendMessage("ai", `返回格式异常: ${JSON.stringify(data)}`);
+                appendMessage("ai", `Response error: ${JSON.stringify(data)}`);
               }
             }
 
           } catch (error) {
             removeLoading();
-            appendMessage("ai", `请求失败: ${error.message}`);
+            appendMessage("ai", `Request failed: ${error.message}`);
           }
         }
 
-        // 轮询图片生成结果（全部通过Worker转发，不暴露API Key）
+        // ========== 原有图片轮询逻辑 完全保留 ==========
         async function pollImageResult(taskId) {
-          const maxRetries = 30; // 最多轮询30次，每次2秒，共1分钟
+          const maxRetries = 30;
           let retries = 0;
           const API_URL = "https://ai-api-proxy.shangyunbai-vercel.workers.dev";
 
@@ -457,7 +566,8 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   taskId: taskId,
-                  action: "getImageResult"
+                  action: "getImageResult",
+                  code: accessCode
                 })
               });
 
@@ -471,7 +581,6 @@
                 throw new Error(data.output.message || "Image generation failed");
               }
 
-              // 等待2秒
               await new Promise(resolve => setTimeout(resolve, 2000));
               retries++;
 
@@ -483,7 +592,7 @@
           throw new Error("Image generation timed out");
         }
 
-        // 添加消息到聊天窗口
+        // ========== 原有消息渲染函数 完全保留 ==========
         function appendMessage(sender, content, isLoading = false) {
           const messageDiv = document.createElement("div");
           messageDiv.className = `message ${sender}-message`;
@@ -503,7 +612,6 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // 添加图片消息
         function appendImageMessage(imageUrl) {
           const messageDiv = document.createElement("div");
           messageDiv.className = "message ai-message";
@@ -521,7 +629,6 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // 移除加载动画
         function removeLoading() {
           const loadingMsg = chatMessages.querySelector(".ai-message:last-child");
           if (loadingMsg && loadingMsg.querySelector(".loading")) {
@@ -529,13 +636,12 @@
           }
         }
 
-        // 填充图片提示词
         function fillImagePrompt(prompt) {
           userInput.value = prompt;
           userInput.focus();
         }
 
-        // ========== 原有的一键填充示例函数（完全保留，没有任何改动） ==========
+        // ========== 原有一键填充示例函数 完全保留 ==========
         function fillEmailExample() {
           let inputInfo = prompt('Email Format: Partner|Product|Usage Scene\nExample: Overseas Buyer|Wireless Earbuds|Bulk Wholesale');
           if(!inputInfo) return;
@@ -565,7 +671,7 @@
           userInput.focus();
         }
 
-        // 事件监听
+        // ========== 事件监听 ==========
         sendBtn.addEventListener("click", sendMessage);
         userInput.addEventListener("keypress", (e) => {
           if (e.key === "Enter") sendMessage();
